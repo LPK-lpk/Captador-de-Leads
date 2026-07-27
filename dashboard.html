@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Importador de Leads – Barbearia</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f0f0f;
+      color: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 460px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 4px;
+      letter-spacing: -0.3px;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 32px;
+    }
+
+    .field-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"], input[type="url"] {
+      width: 100%;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #f0f0f0;
+      font-size: 0.95rem;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      border-color: #555;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .stat-box {
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #4ade80;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-value.dup  { color: #facc15; }
+    .stat-value.err  { color: #f87171; }
+    .stat-value.tot  { color: #60a5fa; }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-primary {
+      background: #4ade80;
+      color: #000;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #22c55e;
+    }
+
+    .btn-primary:disabled {
+      background: #1a3a2a;
+      color: #3a6a4a;
+      cursor: not-allowed;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #222;
+      margin: 24px 0;
+    }
+
+    .status-box {
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.88rem;
+      color: #888;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #333;
+      flex-shrink: 0;
+      transition: background 0.3s;
+    }
+
+    .dot.running  { background: #facc15; animation: pulse 1s infinite; }
+    .dot.success  { background: #4ade80; }
+    .dot.error    { background: #f87171; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 0.75rem;
+      color: #444;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>📋 Importador de Leads</h1>
+    <p class="subtitle">Barbearia — WhatsApp → Google Sheets</p>
+
+    <div class="field-group">
+      <label>Instância Evolution API</label>
+      <input type="text" id="instance" value="barbearia" placeholder="nome da instância" />
+    </div>
+
+    <div class="field-group">
+      <label>URL do Webhook n8n</label>
+      <input type="url" id="webhookUrl"
+        value="https://SEU_N8N/webhook/importar-leads-barbearia"
+        placeholder="https://..." />
+    </div>
+
+    <hr class="divider" />
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-value tot" id="statTotal">–</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" id="statInseridos">–</div>
+        <div class="stat-label">Novos</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value dup" id="statDuplicados">–</div>
+        <div class="stat-label">Duplicados</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value err" id="statErros">–</div>
+        <div class="stat-label">Erros</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="btnImportar" onclick="importar()">
+      ▶ IMPORTAR LEADS
+    </button>
+
+    <hr class="divider" />
+
+    <div class="status-box">
+      <div class="dot" id="dot"></div>
+      <span id="statusMsg">Aguardando...</span>
+    </div>
+
+    <p class="footer">Os dados são salvos diretamente na planilha <strong>Leads_Barbearia → aba Leads</strong></p>
+  </div>
+
+  <script>
+    async function importar() {
+      const instance   = document.getElementById('instance').value.trim();
+      const webhookUrl = document.getElementById('webhookUrl').value.trim();
+      const btn        = document.getElementById('btnImportar');
+      const dot        = document.getElementById('dot');
+      const statusMsg  = document.getElementById('statusMsg');
+
+      if (!instance || !webhookUrl || webhookUrl.includes('SEU_N8N')) {
+        setStatus('error', '⚠️ Preencha a instância e a URL do webhook corretamente.');
+        return;
+      }
+
+      // Estado: rodando
+      btn.disabled = true;
+      dot.className = 'dot running';
+      setStatus('', '⏳ Importando leads... isso pode levar alguns segundos.');
+      resetStats();
+
+      try {
+        const res = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ instance })
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const data = await res.json();
+
+        if (data.sucesso) {
+          const e = data.estatisticas || {};
+          document.getElementById('statTotal').textContent     = e.total      ?? '–';
+          document.getElementById('statInseridos').textContent = e.inseridos  ?? '–';
+          document.getElementById('statDuplicados').textContent= e.duplicados ?? '–';
+          document.getElementById('statErros').textContent     = e.erros      ?? '–';
+
+          dot.className = 'dot success';
+          setStatus('', `✅ Concluído em ${data.finalizadoEm || '–'} — ${e.inseridos} novos leads salvos.`);
+        } else {
+          throw new Error(data.mensagem || 'Resposta inesperada do servidor');
+        }
+
+      } catch (err) {
+        dot.className = 'dot error';
+        setStatus('', '❌ Erro: ' + err.message);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function setStatus(type, msg) {
+      document.getElementById('statusMsg').textContent = msg;
+    }
+
+    function resetStats() {
+      ['statTotal','statInseridos','statDuplicados','statErros']
+        .forEach(id => document.getElementById(id).textContent = '–');
+    }
+  </script>
+</body>
+</html>

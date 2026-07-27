@@ -1,0 +1,184 @@
+{
+  "name": "02 - Processar Leads",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "a1b2c3d4-0002-0002-0002-000000000001",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// 02 - Processar Leads | Code - Deduplicar e Padronizar\n// Responsabilidades:\n//   - Remover duplicados (por número)\n//   - Validar e padronizar telefone brasileiro\n//   - Formatar data para Brasília (UTC-3)\n//   - Classificar tipo do contato\n//   - Preparar estrutura final para o Google Sheets\n// ============================================================\n\nconst itens = $input.all();\n\nif (!itens || itens.length === 0) {\n  return [{ json: { leads: [], total: 0, mensagem: 'Nenhum item recebido' } }];\n}\n\n// ── Helpers ──────────────────────────────────────────────────\n\nfunction normalizarTelefone(numero) {\n  // Remove tudo que não for dígito\n  let n = numero.toString().replace(/\\D/g, '');\n\n  // Se não começar com 55 (DDI Brasil), adiciona\n  if (!n.startsWith('55')) {\n    n = '55' + n;\n  }\n\n  // Formato esperado: 55 + DDD (2) + número (8 ou 9 dígitos)\n  // Total: 12 (fixo) ou 13 (celular) dígitos\n  if (n.length < 12 || n.length > 13) return null;\n\n  return n;\n}\n\nfunction formatarData(timestamp) {\n  if (!timestamp) return '';\n  try {\n    const d = new Date(timestamp);\n    if (isNaN(d.getTime())) return '';\n    // Formata para Brasília (UTC-3)\n    return d.toLocaleString('pt-BR', {\n      timeZone: 'America/Sao_Paulo',\n      day: '2-digit',\n      month: '2-digit',\n      year: 'numeric',\n      hour: '2-digit',\n      minute: '2-digit'\n    });\n  } catch (e) {\n    return '';\n  }\n}\n\nfunction classificarTipo(nome, pushName, numero) {\n  // Sem nome salvo na agenda\n  if (!nome || nome === numero) {\n    return pushName ? 'Sem Nome (tem apelido)' : 'Sem Nome';\n  }\n  return 'Contato';\n}\n\nfunction dataImportacao() {\n  return new Date().toLocaleString('pt-BR', {\n    timeZone: 'America/Sao_Paulo',\n    day: '2-digit',\n    month: '2-digit',\n    year: 'numeric',\n    hour: '2-digit',\n    minute: '2-digit'\n  });\n}\n\n// ── Processar e deduplicar ────────────────────────────────────\n\nconst vistos = new Set();\nconst leads = [];\n\nfor (const item of itens) {\n  const d = item.json;\n\n  // Ignorar itens de controle (sem número real)\n  if (d.nenhumPost || d.total === 0 || !d.numero) continue;\n\n  // Normalizar telefone\n  const numeroNorm = normalizarTelefone(d.numero);\n  if (!numeroNorm) continue;\n\n  // Deduplicar por número\n  if (vistos.has(numeroNorm)) continue;\n  vistos.add(numeroNorm);\n\n  const nome = (d.nome || '').trim();\n  const pushName = (d.pushName || '').trim();\n  const tipo = classificarTipo(nome, pushName, numeroNorm);\n\n  leads.push({\n    json: {\n      Nome: nome || pushName || numeroNorm,\n      WhatsApp: numeroNorm,\n      PushName: pushName,\n      UltimaMensagem: (d.ultimaMensagem || '').trim(),\n      DataUltimaConversa: formatarData(d.timestamp),\n      Tipo: tipo,\n      ImportadoEm: dataImportacao()\n    }\n  });\n}\n\nif (leads.length === 0) {\n  return [{ json: { leads: [], total: 0, mensagem: 'Nenhum lead válido após processamento' } }];\n}\n\nreturn leads;"
+      },
+      "id": "a1b2c3d4-0002-0002-0002-000000000002",
+      "name": "Code - Deduplicar e Padronizar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-valid",
+              "leftValue": "={{ $json.WhatsApp }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0002-0002-0002-000000000003",
+      "name": "IF - Lead Válido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ret-001",
+              "name": "Nome",
+              "value": "={{ $json.Nome }}",
+              "type": "string"
+            },
+            {
+              "id": "ret-002",
+              "name": "WhatsApp",
+              "value": "={{ $json.WhatsApp }}",
+              "type": "string"
+            },
+            {
+              "id": "ret-003",
+              "name": "PushName",
+              "value": "={{ $json.PushName }}",
+              "type": "string"
+            },
+            {
+              "id": "ret-004",
+              "name": "UltimaMensagem",
+              "value": "={{ $json.UltimaMensagem }}",
+              "type": "string"
+            },
+            {
+              "id": "ret-005",
+              "name": "DataUltimaConversa",
+              "value": "={{ $json.DataUltimaConversa }}",
+              "type": "string"
+            },
+            {
+              "id": "ret-006",
+              "name": "Tipo",
+              "value": "={{ $json.Tipo }}",
+              "type": "string"
+            },
+            {
+              "id": "ret-007",
+              "name": "ImportadoEm",
+              "value": "={{ $json.ImportadoEm }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0002-0002-0002-000000000004",
+      "name": "Return - Lead Processado",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "skip-001",
+              "name": "ignorado",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "skip-002",
+              "name": "motivo",
+              "value": "Lead sem número válido",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0002-0002-0002-000000000005",
+      "name": "Return - Ignorado",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [900, 420]
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code - Deduplicar e Padronizar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Deduplicar e Padronizar": {
+      "main": [
+        [
+          {
+            "node": "IF - Lead Válido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Lead Válido?": {
+      "main": [
+        [
+          {
+            "node": "Return - Lead Processado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return - Ignorado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "instanceId": "barbearia-leads-importer"
+  }
+}
