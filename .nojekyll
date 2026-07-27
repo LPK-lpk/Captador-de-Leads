@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Captador de Leads – Barbearia</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0d0d0d;
+      color: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    .card {
+      background: #1c1c1c;
+      border: 1px solid #2e2e2e;
+      border-radius: 20px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.6);
+    }
+
+    /* ── LOGIN ─────────────────────────────── */
+    #loginScreen { display: flex; flex-direction: column; }
+    #appScreen   { display: none; flex-direction: column; }
+
+    .icon {
+      font-size: 2.4rem;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 0.88rem;
+      color: #555;
+      margin-bottom: 36px;
+    }
+
+    .field-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      background: #111;
+      border: 1px solid #2e2e2e;
+      border-radius: 10px;
+      color: #f0f0f0;
+      font-size: 0.95rem;
+      padding: 13px 15px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      border-color: #4ade80;
+    }
+
+    .erro-login {
+      color: #f87171;
+      font-size: 0.82rem;
+      margin-top: 10px;
+      min-height: 18px;
+      text-align: center;
+    }
+
+    /* ── BOTÕES ────────────────────────────── */
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.5px;
+      margin-top: 8px;
+    }
+
+    .btn-primary {
+      background: #4ade80;
+      color: #000;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #22c55e;
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:disabled {
+      background: #1a3a2a;
+      color: #3a6a4a;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ── DIVIDER ───────────────────────────── */
+    .divider {
+      border: none;
+      border-top: 1px solid #222;
+      margin: 28px 0;
+    }
+
+    /* ── STATS ─────────────────────────────── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .stat-box {
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 18px 12px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #4ade80;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-value.dup { color: #facc15; }
+    .stat-value.err { color: #f87171; }
+    .stat-value.tot { color: #60a5fa; }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    /* ── STATUS ────────────────────────────── */
+    .status-box {
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.88rem;
+      color: #888;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #333;
+      flex-shrink: 0;
+    }
+
+    .dot.running { background: #facc15; animation: pulse 1s infinite; }
+    .dot.success { background: #4ade80; }
+    .dot.error   { background: #f87171; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.2; }
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 0.75rem;
+      color: #3a3a3a;
+      text-align: center;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── TELA DE LOGIN ───────────────────── -->
+  <div class="card" id="loginScreen">
+    <div class="icon">🔐</div>
+    <h1>Acesso Restrito</h1>
+    <p class="subtitle">Captador de Leads — Barbearia</p>
+
+    <div class="field-group">
+      <label>Senha</label>
+      <input type="password" id="senhaInput" placeholder="Digite a senha"
+        onkeydown="if(event.key==='Enter') entrar()" autofocus />
+    </div>
+
+    <button class="btn btn-primary" onclick="entrar()">ENTRAR</button>
+    <p class="erro-login" id="erroLogin"></p>
+  </div>
+
+  <!-- ── TELA PRINCIPAL ──────────────────── -->
+  <div class="card" id="appScreen">
+    <div class="icon">📋</div>
+    <h1>Importador de Leads</h1>
+    <p class="subtitle">WhatsApp → Google Sheets</p>
+
+    <div class="field-group">
+      <label>Instância Evolution API</label>
+      <input type="text" id="instance" value="barbearia" placeholder="nome da instância" />
+    </div>
+
+    <div class="field-group">
+      <label>URL do Webhook n8n</label>
+      <input type="url" id="webhookUrl"
+        value="https://SEU_N8N/webhook/importar-leads-barbearia"
+        placeholder="https://..." />
+    </div>
+
+    <hr class="divider" />
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-value tot" id="statTotal">–</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" id="statInseridos">–</div>
+        <div class="stat-label">Novos</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value dup" id="statDuplicados">–</div>
+        <div class="stat-label">Duplicados</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value err" id="statErros">–</div>
+        <div class="stat-label">Erros</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="btnImportar" onclick="importar()">
+      ▶ IMPORTAR LEADS
+    </button>
+
+    <div class="status-box">
+      <div class="dot" id="dot"></div>
+      <span id="statusMsg">Aguardando...</span>
+    </div>
+
+    <p class="footer">Dados salvos em <strong>Leads_Barbearia → Leads</strong></p>
+  </div>
+
+  <script>
+    const SENHA = '34266450';
+
+    function entrar() {
+      const digitado = document.getElementById('senhaInput').value;
+      if (digitado === SENHA) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('appScreen').style.display   = 'flex';
+      } else {
+        document.getElementById('erroLogin').textContent = '❌ Senha incorreta. Tente novamente.';
+        document.getElementById('senhaInput').value = '';
+        document.getElementById('senhaInput').focus();
+      }
+    }
+
+    async function importar() {
+      const instance   = document.getElementById('instance').value.trim();
+      const webhookUrl = document.getElementById('webhookUrl').value.trim();
+      const btn        = document.getElementById('btnImportar');
+      const dot        = document.getElementById('dot');
+
+      if (!instance || !webhookUrl || webhookUrl.includes('SEU_N8N')) {
+        dot.className = 'dot error';
+        document.getElementById('statusMsg').textContent = '⚠️ Preencha a instância e a URL do webhook.';
+        return;
+      }
+
+      btn.disabled = true;
+      dot.className = 'dot running';
+      document.getElementById('statusMsg').textContent = '⏳ Importando leads... aguarde.';
+      resetStats();
+
+      try {
+        const res = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ instance })
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        if (data.sucesso) {
+          const e = data.estatisticas || {};
+          document.getElementById('statTotal').textContent      = e.total      ?? '–';
+          document.getElementById('statInseridos').textContent  = e.inseridos  ?? '–';
+          document.getElementById('statDuplicados').textContent = e.duplicados ?? '–';
+          document.getElementById('statErros').textContent      = e.erros      ?? '–';
+          dot.className = 'dot success';
+          document.getElementById('statusMsg').textContent =
+            `✅ Concluído — ${e.inseridos} novos leads salvos.`;
+        } else {
+          throw new Error(data.mensagem || 'Resposta inesperada');
+        }
+
+      } catch (err) {
+        dot.className = 'dot error';
+        document.getElementById('statusMsg').textContent = '❌ Erro: ' + err.message;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function resetStats() {
+      ['statTotal','statInseridos','statDuplicados','statErros']
+        .forEach(id => document.getElementById(id).textContent = '–');
+    }
+  </script>
+</body>
+</html>
