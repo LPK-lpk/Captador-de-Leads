@@ -3,43 +3,51 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Importador de Leads – Barbearia</title>
+  <title>Captador de Leads – Barbearia</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0f0f0f;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0d0d0d;
       color: #f0f0f0;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 32px 16px;
     }
 
     .card {
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      border-radius: 16px;
-      padding: 40px 36px;
+      background: #1c1c1c;
+      border: 1px solid #2e2e2e;
+      border-radius: 20px;
+      padding: 48px 40px;
       width: 100%;
-      max-width: 460px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+      max-width: 440px;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.6);
+    }
+
+    /* ── LOGIN ─────────────────────────────── */
+    #loginScreen { display: flex; flex-direction: column; }
+    #appScreen   { display: none; flex-direction: column; }
+
+    .icon {
+      font-size: 2.4rem;
+      margin-bottom: 12px;
     }
 
     h1 {
-      font-size: 1.4rem;
+      font-size: 1.6rem;
       font-weight: 700;
       color: #ffffff;
-      margin-bottom: 4px;
-      letter-spacing: -0.3px;
+      margin-bottom: 6px;
     }
 
     .subtitle {
-      font-size: 0.85rem;
-      color: #666;
-      margin-bottom: 32px;
+      font-size: 0.88rem;
+      color: #555;
+      margin-bottom: 36px;
     }
 
     .field-group {
@@ -48,64 +56,39 @@
 
     label {
       display: block;
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       font-weight: 600;
-      color: #888;
+      color: #666;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 1px;
       margin-bottom: 8px;
     }
 
-    input[type="text"], input[type="url"] {
+    input {
       width: 100%;
       background: #111;
-      border: 1px solid #333;
-      border-radius: 8px;
+      border: 1px solid #2e2e2e;
+      border-radius: 10px;
       color: #f0f0f0;
       font-size: 0.95rem;
-      padding: 12px 14px;
+      padding: 13px 15px;
       outline: none;
       transition: border-color 0.2s;
     }
 
     input:focus {
-      border-color: #555;
+      border-color: #4ade80;
     }
 
-    .stats-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
-    .stat-box {
-      background: #111;
-      border: 1px solid #2a2a2a;
-      border-radius: 10px;
-      padding: 16px;
+    .erro-login {
+      color: #f87171;
+      font-size: 0.82rem;
+      margin-top: 10px;
+      min-height: 18px;
       text-align: center;
     }
 
-    .stat-value {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #4ade80;
-      line-height: 1;
-      margin-bottom: 4px;
-    }
-
-    .stat-value.dup  { color: #facc15; }
-    .stat-value.err  { color: #f87171; }
-    .stat-value.tot  { color: #60a5fa; }
-
-    .stat-label {
-      font-size: 0.75rem;
-      color: #555;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-    }
-
+    /* ── BOTÕES ────────────────────────────── */
     .btn {
       width: 100%;
       padding: 14px;
@@ -115,7 +98,8 @@
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.5px;
+      margin-top: 8px;
     }
 
     .btn-primary {
@@ -125,20 +109,59 @@
 
     .btn-primary:hover:not(:disabled) {
       background: #22c55e;
+      transform: translateY(-1px);
     }
 
     .btn-primary:disabled {
       background: #1a3a2a;
       color: #3a6a4a;
       cursor: not-allowed;
+      transform: none;
     }
 
+    /* ── DIVIDER ───────────────────────────── */
     .divider {
       border: none;
       border-top: 1px solid #222;
-      margin: 24px 0;
+      margin: 28px 0;
     }
 
+    /* ── STATS ─────────────────────────────── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .stat-box {
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 18px 12px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #4ade80;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-value.dup { color: #facc15; }
+    .stat-value.err { color: #f87171; }
+    .stat-value.tot { color: #60a5fa; }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    /* ── STATUS ────────────────────────────── */
     .status-box {
       background: #111;
       border: 1px solid #2a2a2a;
@@ -146,42 +169,62 @@
       padding: 14px 16px;
       font-size: 0.88rem;
       color: #888;
-      min-height: 48px;
+      min-height: 50px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      margin-top: 20px;
     }
 
     .dot {
-      width: 8px;
-      height: 8px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
       background: #333;
       flex-shrink: 0;
-      transition: background 0.3s;
     }
 
-    .dot.running  { background: #facc15; animation: pulse 1s infinite; }
-    .dot.success  { background: #4ade80; }
-    .dot.error    { background: #f87171; }
+    .dot.running { background: #facc15; animation: pulse 1s infinite; }
+    .dot.success { background: #4ade80; }
+    .dot.error   { background: #f87171; }
 
     @keyframes pulse {
       0%, 100% { opacity: 1; }
-      50%       { opacity: 0.3; }
+      50%       { opacity: 0.2; }
     }
 
     .footer {
       margin-top: 20px;
       font-size: 0.75rem;
-      color: #444;
+      color: #3a3a3a;
       text-align: center;
+      line-height: 1.5;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>📋 Importador de Leads</h1>
-    <p class="subtitle">Barbearia — WhatsApp → Google Sheets</p>
+
+  <!-- ── TELA DE LOGIN ───────────────────── -->
+  <div class="card" id="loginScreen">
+    <div class="icon">🔐</div>
+    <h1>Acesso Restrito</h1>
+    <p class="subtitle">Captador de Leads — Barbearia</p>
+
+    <div class="field-group">
+      <label>Senha</label>
+      <input type="password" id="senhaInput" placeholder="Digite a senha"
+        onkeydown="if(event.key==='Enter') entrar()" autofocus />
+    </div>
+
+    <button class="btn btn-primary" onclick="entrar()">ENTRAR</button>
+    <p class="erro-login" id="erroLogin"></p>
+  </div>
+
+  <!-- ── TELA PRINCIPAL ──────────────────── -->
+  <div class="card" id="appScreen">
+    <div class="icon">📋</div>
+    <h1>Importador de Leads</h1>
+    <p class="subtitle">WhatsApp → Google Sheets</p>
 
     <div class="field-group">
       <label>Instância Evolution API</label>
@@ -220,33 +263,44 @@
       ▶ IMPORTAR LEADS
     </button>
 
-    <hr class="divider" />
-
     <div class="status-box">
       <div class="dot" id="dot"></div>
       <span id="statusMsg">Aguardando...</span>
     </div>
 
-    <p class="footer">Os dados são salvos diretamente na planilha <strong>Leads_Barbearia → aba Leads</strong></p>
+    <p class="footer">Dados salvos em <strong>Leads_Barbearia → Leads</strong></p>
   </div>
 
   <script>
+    const SENHA = '34266450';
+
+    function entrar() {
+      const digitado = document.getElementById('senhaInput').value;
+      if (digitado === SENHA) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('appScreen').style.display   = 'flex';
+      } else {
+        document.getElementById('erroLogin').textContent = '❌ Senha incorreta. Tente novamente.';
+        document.getElementById('senhaInput').value = '';
+        document.getElementById('senhaInput').focus();
+      }
+    }
+
     async function importar() {
       const instance   = document.getElementById('instance').value.trim();
       const webhookUrl = document.getElementById('webhookUrl').value.trim();
       const btn        = document.getElementById('btnImportar');
       const dot        = document.getElementById('dot');
-      const statusMsg  = document.getElementById('statusMsg');
 
       if (!instance || !webhookUrl || webhookUrl.includes('SEU_N8N')) {
-        setStatus('error', '⚠️ Preencha a instância e a URL do webhook corretamente.');
+        dot.className = 'dot error';
+        document.getElementById('statusMsg').textContent = '⚠️ Preencha a instância e a URL do webhook.';
         return;
       }
 
-      // Estado: rodando
       btn.disabled = true;
       dot.className = 'dot running';
-      setStatus('', '⏳ Importando leads... isso pode levar alguns segundos.');
+      document.getElementById('statusMsg').textContent = '⏳ Importando leads... aguarde.';
       resetStats();
 
       try {
@@ -257,32 +311,27 @@
         });
 
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
         const data = await res.json();
 
         if (data.sucesso) {
           const e = data.estatisticas || {};
-          document.getElementById('statTotal').textContent     = e.total      ?? '–';
-          document.getElementById('statInseridos').textContent = e.inseridos  ?? '–';
-          document.getElementById('statDuplicados').textContent= e.duplicados ?? '–';
-          document.getElementById('statErros').textContent     = e.erros      ?? '–';
-
+          document.getElementById('statTotal').textContent      = e.total      ?? '–';
+          document.getElementById('statInseridos').textContent  = e.inseridos  ?? '–';
+          document.getElementById('statDuplicados').textContent = e.duplicados ?? '–';
+          document.getElementById('statErros').textContent      = e.erros      ?? '–';
           dot.className = 'dot success';
-          setStatus('', `✅ Concluído em ${data.finalizadoEm || '–'} — ${e.inseridos} novos leads salvos.`);
+          document.getElementById('statusMsg').textContent =
+            `✅ Concluído — ${e.inseridos} novos leads salvos.`;
         } else {
-          throw new Error(data.mensagem || 'Resposta inesperada do servidor');
+          throw new Error(data.mensagem || 'Resposta inesperada');
         }
 
       } catch (err) {
         dot.className = 'dot error';
-        setStatus('', '❌ Erro: ' + err.message);
+        document.getElementById('statusMsg').textContent = '❌ Erro: ' + err.message;
       } finally {
         btn.disabled = false;
       }
-    }
-
-    function setStatus(type, msg) {
-      document.getElementById('statusMsg').textContent = msg;
     }
 
     function resetStats() {
