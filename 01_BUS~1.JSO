@@ -16,7 +16,19 @@
             {
               "id": "inst-001",
               "name": "instance",
-              "value": "={{ $json.instance || 'barbearia' }}",
+              "value": "={{ $json.instance || 'MinhaInstancia' }}",
+              "type": "string"
+            },
+            {
+              "id": "inst-002",
+              "name": "evolutionUrl",
+              "value": "http://n8n-evolution.ndjgby.easypanel.host",
+              "type": "string"
+            },
+            {
+              "id": "inst-003",
+              "name": "apikey",
+              "value": "SUA_APIKEY",
               "type": "string"
             }
           ]
@@ -31,13 +43,70 @@
     },
     {
       "parameters": {
-        "jsCode": "// ============================================================\n// 01 - Buscar Chats Evolution | Paginação Completa\n// Busca TODOS os chats históricos em páginas de 100,\n// filtra grupos/canais e normaliza os dados.\n// ============================================================\n\nconst instance  = $json.instance;\nconst baseUrl   = $env.EVOLUTION_URL.replace(/\\/$/, '');\nconst apikey    = $env.EVOLUTION_APIKEY;\nconst LIMIT     = 100; // chats por página\n\n// ── Helpers ──────────────────────────────────────────────────\n\nfunction extrairMensagem(msg) {\n  if (!msg) return '';\n  const m = msg.message || {};\n  if (typeof m === 'string')                  return m;\n  if (m.conversation)                         return m.conversation;\n  if (m.extendedTextMessage?.text)            return m.extendedTextMessage.text;\n  if (m.imageMessage)                         return '[Imagem]';\n  if (m.audioMessage)                         return '[Áudio]';\n  if (m.videoMessage)                         return '[Vídeo]';\n  if (m.documentMessage)                      return '[Documento]';\n  if (m.stickerMessage)                       return '[Figurinha]';\n  if (m.locationMessage)                      return '[Localização]';\n  if (m.contactMessage)                       return '[Contato]';\n  return '[Mídia]';\n}\n\nfunction extrairTimestamp(chat, msg) {\n  const ts = msg?.messageTimestamp || msg?.timestamp || chat?.updatedAt || '';\n  if (!ts) return '';\n  const n = Number(ts);\n  if (!isNaN(n) && n > 0) return new Date(n * 1000).toISOString();\n  if (typeof ts === 'string') {\n    const d = new Date(ts);\n    if (!isNaN(d.getTime())) return d.toISOString();\n  }\n  return '';\n}\n\nfunction normalizar(chats) {\n  const resultado = [];\n  for (const chat of chats) {\n    const id = chat.id || chat.remoteJid || '';\n\n    // Filtros de exclusão\n    if (!id) continue;\n    if (id.includes('@g.us'))        continue; // grupos\n    if (id.includes('@newsletter'))  continue; // canais\n    if (id.includes('@broadcast'))   continue; // broadcasts\n    if (id === 'status@broadcast')   continue; // status\n    if (id.includes('lid'))          continue; // IDs internos Meta\n\n    const numero = id.split('@')[0].replace(/\\D/g, '');\n    if (!/^\\d{10,15}$/.test(numero)) continue;\n\n    const msg = chat.lastMessage || chat.messages?.[0] || null;\n\n    resultado.push({\n      json: {\n        numero,\n        nome:            chat.name || chat.pushName || numero,\n        pushName:        chat.pushName || '',\n        ultimaMensagem:  extrairMensagem(msg).substring(0, 500),\n        timestamp:       extrairTimestamp(chat, msg),\n        grupo:           false\n      }\n    });\n  }\n  return resultado;\n}\n\n// ── Loop de paginação ─────────────────────────────────────────\n\nconst url = `${baseUrl}/chat/findChats/${instance}`;\nlet offset    = 0;\nlet allChats  = [];\nlet pagina    = 1;\nlet hasMore   = true;\n\nwhile (hasMore) {\n  let data;\n\n  try {\n    // Tenta POST com body (Evolution API v2+)\n    const res = await fetch(url, {\n      method: 'POST',\n      headers: {\n        'apikey':       apikey,\n        'Content-Type': 'application/json'\n      },\n      body: JSON.stringify({ limit: LIMIT, offset })\n    });\n\n    data = await res.json();\n\n    // Fallback: se POST retornar erro, tenta GET com query params\n    if (data?.status >= 400 || data?.error) {\n      const resGet = await fetch(`${url}?limit=${LIMIT}&offset=${offset}`, {\n        method: 'GET',\n        headers: { 'apikey': apikey }\n      });\n      data = await resGet.json();\n    }\n  } catch (e) {\n    throw new Error(`Falha na requisição (página ${pagina}): ` + e.message);\n  }\n\n  // Detectar array de chats na resposta\n  let chats = [];\n  if (Array.isArray(data)) {\n    chats = data;\n  } else if (Array.isArray(data?.chats)) {\n    chats = data.chats;\n  } else {\n    // Procurar array em qualquer chave\n    for (const val of Object.values(data || {})) {\n      if (Array.isArray(val)) { chats = val; break; }\n    }\n  }\n\n  allChats = allChats.concat(chats);\n\n  // Se recebeu menos que o limite, chegamos ao fim\n  if (chats.length < LIMIT) {\n    hasMore = false;\n  } else {\n    offset += LIMIT;\n    pagina++;\n  }\n\n  // Segurança: máximo de 50 páginas (5.000 chats)\n  if (pagina > 50) hasMore = false;\n}\n\nif (allChats.length === 0) {\n  return [{ json: { chats: [], total: 0, mensagem: 'Nenhum chat encontrado na instância' } }];\n}\n\nconst resultado = normalizar(allChats);\n\nif (resultado.length === 0) {\n  return [{ json: { chats: [], total: 0, mensagem: 'Nenhum contato individual após filtragem' } }];\n}\n\nreturn resultado;"
+        "method": "POST",
+        "url": "={{ $json.evolutionUrl }}/chat/findChats/{{ $json.instance }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $json.apikey }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"where\": {}, \"page\": {\"limit\": 1000, \"offset\": 0}}",
+        "options": {}
       },
       "id": "a1b2c3d4-0001-0001-0001-000000000003",
-      "name": "Code - Buscar Todos os Chats (Paginado)",
+      "name": "HTTP - Buscar Chats",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 160],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Set - Instância').first().json.evolutionUrl }}/contacts/fetchContacts/{{ $('Set - Instância').first().json.instance }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $('Set - Instância').first().json.apikey }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0001-0001-0001-000000000006",
+      "name": "HTTP - Fetch Contatos",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 440],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "mode": "append"
+      },
+      "id": "a1b2c3d4-0001-0001-0001-000000000007",
+      "name": "Merge - Unir Fontes",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// Normalizar contatos de duas fontes:\n// 1. findChats  — chats com histórico de mensagens\n// 2. fetchContacts — agenda completa de contatos\n// ============================================================\n\nconst itens = $input.all();\n\nif (!itens || itens.length === 0) {\n  return [{ json: { chats: [], total: 0, mensagem: 'Nenhum contato encontrado' } }];\n}\n\n// ── Helpers ──────────────────────────────────────────────────\n\nfunction extrairMensagem(msg) {\n  if (!msg) return '';\n  const m = msg.message || {};\n  if (typeof m === 'string')           return m;\n  if (m.conversation)                  return m.conversation;\n  if (m.extendedTextMessage?.text)     return m.extendedTextMessage.text;\n  if (m.imageMessage)                  return '[Imagem]';\n  if (m.audioMessage)                  return '[Áudio]';\n  if (m.videoMessage)                  return '[Vídeo]';\n  if (m.documentMessage)               return '[Documento]';\n  if (m.stickerMessage)                return '[Figurinha]';\n  if (m.locationMessage)               return '[Localização]';\n  if (m.contactMessage)                return '[Contato]';\n  return '[Mídia]';\n}\n\nfunction extrairTimestamp(chat, msg) {\n  const ts = msg?.messageTimestamp || msg?.timestamp\n    || chat?.updatedAt || chat?.lastMessage?.messageTimestamp || '';\n  if (!ts) return '';\n  const n = Number(ts);\n  if (!isNaN(n) && n > 0) return new Date(n * 1000).toISOString();\n  if (typeof ts === 'string') {\n    const d = new Date(ts);\n    if (!isNaN(d.getTime())) return d.toISOString();\n  }\n  return '';\n}\n\n// ── Processar e deduplicar ────────────────────────────────────\n\nconst resultado = [];\nconst vistos = new Set();\n\nfor (const item of itens) {\n  const chat = item.json;\n\n  // Pular itens de erro\n  if (chat.error || chat.status === 404 || chat.code === 'ERR_BAD_REQUEST') continue;\n\n  const id = chat.id\n    || chat.remoteJid\n    || chat.jid\n    || chat.lastMessage?.key?.remoteJid\n    || chat.lastMessage?.remoteJid\n    || chat.key?.remoteJid\n    || '';\n\n  if (!id) continue;\n  if (id.includes('@g.us'))       continue;\n  if (id.includes('@newsletter')) continue;\n  if (id.includes('@broadcast'))  continue;\n  if (id === 'status@broadcast')  continue;\n  if (id.includes(':'))           continue; // dispositivos secundários\n  if (id.toLowerCase().includes('lid')) continue;\n\n  const numero = id.split('@')[0].replace(/\\D/g, '');\n  if (!/^\\d{8,15}$/.test(numero)) continue;\n\n  // Deduplicar entre as duas fontes\n  if (vistos.has(numero)) continue;\n  vistos.add(numero);\n\n  const msg = chat.lastMessage || null;\n  const isFromMe = msg?.key?.fromMe === true;\n\n  // Evitar \"Você\" — só usa pushName da lastMessage se não for fromMe\n  const pushNameContato = chat.pushName\n    || (!isFromMe ? (msg?.pushName || '') : '')\n    || '';\n\n  resultado.push({\n    json: {\n      numero,\n      nome:           chat.name || pushNameContato || numero,\n      pushName:       pushNameContato,\n      ultimaMensagem: extrairMensagem(msg).substring(0, 500),\n      timestamp:      extrairTimestamp(chat, msg),\n      grupo:          false\n    }\n  });\n}\n\nif (resultado.length === 0) {\n  return [{ json: { chats: [], total: 0, mensagem: 'Nenhum contato individual após filtragem' } }];\n}\n\nreturn resultado;"
+      },
+      "id": "a1b2c3d4-0001-0001-0001-000000000004",
+      "name": "Code - Normalizar Chats",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [680, 300]
+      "position": [1120, 300]
     },
     {
       "parameters": {
@@ -77,44 +146,54 @@
         },
         "options": {}
       },
-      "id": "a1b2c3d4-0001-0001-0001-000000000004",
+      "id": "a1b2c3d4-0001-0001-0001-000000000005",
       "name": "Return - Chats Normalizados",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [900, 300]
+      "position": [1340, 300]
     }
   ],
   "connections": {
     "Execute Workflow Trigger": {
       "main": [
         [
-          {
-            "node": "Set - Instância",
-            "type": "main",
-            "index": 0
-          }
+          { "node": "Set - Instância", "type": "main", "index": 0 }
         ]
       ]
     },
     "Set - Instância": {
       "main": [
         [
-          {
-            "node": "Code - Buscar Todos os Chats (Paginado)",
-            "type": "main",
-            "index": 0
-          }
+          { "node": "HTTP - Buscar Chats", "type": "main", "index": 0 },
+          { "node": "HTTP - Fetch Contatos", "type": "main", "index": 0 }
         ]
       ]
     },
-    "Code - Buscar Todos os Chats (Paginado)": {
+    "HTTP - Buscar Chats": {
       "main": [
         [
-          {
-            "node": "Return - Chats Normalizados",
-            "type": "main",
-            "index": 0
-          }
+          { "node": "Merge - Unir Fontes", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "HTTP - Fetch Contatos": {
+      "main": [
+        [
+          { "node": "Merge - Unir Fontes", "type": "main", "index": 1 }
+        ]
+      ]
+    },
+    "Merge - Unir Fontes": {
+      "main": [
+        [
+          { "node": "Code - Normalizar Chats", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Code - Normalizar Chats": {
+      "main": [
+        [
+          { "node": "Return - Chats Normalizados", "type": "main", "index": 0 }
         ]
       ]
     }
