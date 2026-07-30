@@ -16,19 +16,19 @@
             {
               "id": "inst-001",
               "name": "instance",
-              "value": "={{ $json.instance || 'MinhaInstancia' }}",
+              "value": "={{ $json.instance }}",
               "type": "string"
             },
             {
               "id": "inst-002",
               "name": "evolutionUrl",
-              "value": "http://n8n-evolution.ndjgby.easypanel.host",
+              "value": "={{ $json.evolutionUrl || 'http://n8n-evolution.ndjgby.easypanel.host' }}",
               "type": "string"
             },
             {
               "id": "inst-003",
               "name": "apikey",
-              "value": "SUA_APIKEY",
+              "value": "={{ $json.apikey || 'SUA_APIKEY' }}",
               "type": "string"
             }
           ]
