@@ -3,36 +3,48 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "a1b2c3d4-0003-0003-0003-000000000001",
+      "id": "3cb4a053-d88e-432e-a1bc-969a7d9ea334",
       "name": "Execute Workflow Trigger",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1,
-      "position": [240, 300]
+      "position": [-1200, 0]
     },
     {
       "parameters": {
-        "operation": "lookupRows",
+        "jsCode": "// Agrega todos os leads em 1 único item (array)\n// Assim o Sheets roda apenas 1 vez\nconst todos = $input.all();\nreturn [{ json: { leads: todos.map(i => i.json) } }];"
+      },
+      "id": "aabb1122-0001-0001-0001-000000000010",
+      "name": "Code - Coletar Leads",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-980, 0]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "getAll",
         "documentId": {
           "__rl": true,
-          "value": "={{ $env.SHEETS_LEADS_ID }}",
-          "mode": "id"
+          "value": "1Y8cjTu3um_S2gi_glXBXaHrPe82n1PfCcs_43u1dddk",
+          "mode": "list",
+          "cachedResultName": "Seo_Salim_Barbearia",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Y8cjTu3um_S2gi_glXBXaHrPe82n1PfCcs_43u1dddk/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": "Leads",
-          "mode": "name"
+          "value": 54342450,
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Y8cjTu3um_S2gi_glXBXaHrPe82n1PfCcs_43u1dddk/edit#gid=54342450"
         },
-        "lookupColumn": "WhatsApp",
-        "lookupValue": "={{ $json.WhatsApp }}",
-        "options": {
-          "returnAllMatches": false
-        }
+        "options": {}
       },
-      "id": "a1b2c3d4-0003-0003-0003-000000000002",
-      "name": "Sheets - Verificar Duplicata",
+      "id": "4bf46f1b-b2a9-440b-bdc6-498ba6c28476",
+      "name": "Sheets - Ler Números Existentes",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
-      "position": [460, 300],
+      "position": [-760, 0],
+      "alwaysOutputData": true,
       "continueOnFail": true,
       "credentials": {
         "googleApi": {
@@ -40,6 +52,26 @@
           "name": "Google Service Account account"
         }
       }
+    },
+    {
+      "parameters": {
+        "mode": "append"
+      },
+      "id": "ccdd3344-0002-0002-0002-000000000020",
+      "name": "Merge - Juntar",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [-540, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// $input.all() contém:\n//   - linhas da planilha (items sem campo 'leads')\n//   - 1 item agregado com campo 'leads' (array de leads)\n// ============================================================\n\nconst MAX_POR_RODADA = 50;\n\nconst allItems = $input.all();\n\n// Separa: item com leads vs linhas da planilha\nconst leadsItem = allItems.find(item => Array.isArray(item.json.leads));\nconst sheetItems = allItems.filter(item => !Array.isArray(item.json.leads));\n\n// Números já na planilha\nconst existentes = new Set(\n  sheetItems\n    .map(i => (i.json.WhatsApp || i.json.whatsapp || '').toString().trim())\n    .filter(Boolean)\n);\n\nconst leadsData = leadsItem?.json.leads || [];\n\nif (leadsData.length === 0) {\n  return [{ json: { inseridos: 0, duplicados: 0, mensagem: 'Nenhum lead recebido' } }];\n}\n\nconst novos = [];\nlet duplicados = 0;\n\nfor (const lead of leadsData) {\n  const num = (lead.WhatsApp || '').toString().trim();\n  if (!num) continue;\n\n  if (existentes.has(num)) {\n    duplicados++;\n  } else {\n    existentes.add(num);\n    novos.push({ json: lead });\n  }\n}\n\nif (novos.length === 0) {\n  return [{ json: { inseridos: 0, duplicados, mensagem: 'Todos os leads já existem na planilha' } }];\n}\n\n// Limita a 50 por rodada (quota Google Sheets)\nconst lote = novos.slice(0, MAX_POR_RODADA);\nlote[0].json._duplicados = duplicados;\nlote[0].json._restantes = novos.length - lote.length;\nreturn lote;"
+      },
+      "id": "f1e603f2-09b5-4c6a-b330-5898053a88f7",
+      "name": "Code - Filtrar Novos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-320, 0]
     },
     {
       "parameters": {
@@ -52,12 +84,12 @@
           },
           "conditions": [
             {
-              "id": "cond-dup",
+              "id": "cond-novo",
               "leftValue": "={{ $json.WhatsApp }}",
               "rightValue": "",
               "operator": {
                 "type": "string",
-                "operation": "empty"
+                "operation": "notEmpty"
               }
             }
           ],
@@ -65,111 +97,65 @@
         },
         "options": {}
       },
-      "id": "a1b2c3d4-0003-0003-0003-000000000003",
-      "name": "IF - É Novo?",
+      "id": "3298a634-0846-4304-9836-e033c443555c",
+      "name": "IF - Tem Leads Novos?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [680, 300]
+      "position": [-100, 0]
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "={{ $env.SHEETS_LEADS_ID }}",
-          "mode": "id"
+          "value": "1Y8cjTu3um_S2gi_glXBXaHrPe82n1PfCcs_43u1dddk",
+          "mode": "list",
+          "cachedResultName": "Seo_Salim_Barbearia",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Y8cjTu3um_S2gi_glXBXaHrPe82n1PfCcs_43u1dddk/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": "Leads",
-          "mode": "name"
+          "value": 54342450,
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Y8cjTu3um_S2gi_glXBXaHrPe82n1PfCcs_43u1dddk/edit#gid=54342450"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "Nome": "={{ $('Execute Workflow Trigger').item.json.Nome }}",
-            "WhatsApp": "={{ $('Execute Workflow Trigger').item.json.WhatsApp }}",
-            "PushName": "={{ $('Execute Workflow Trigger').item.json.PushName }}",
-            "Ultima Mensagem": "={{ $('Execute Workflow Trigger').item.json.UltimaMensagem }}",
-            "Data Ultima Conversa": "={{ $('Execute Workflow Trigger').item.json.DataUltimaConversa }}",
-            "Tipo": "={{ $('Execute Workflow Trigger').item.json.Tipo }}",
-            "Importado em": "={{ $('Execute Workflow Trigger').item.json.ImportadoEm }}"
+            "Nome": "={{ $json.Nome }}",
+            "WhatsApp": "={{ $json.WhatsApp }}",
+            "PushName": "={{ $json.PushName }}",
+            "Ultima Mensagem": "={{ $json.UltimaMensagem }}",
+            "Data Ultima Conversa": "={{ $json.DataUltimaConversa }}",
+            "Tipo": "={{ $json.Tipo }}",
+            "Importado em": "={{ $json.ImportadoEm }}"
           },
           "matchingColumns": [],
           "schema": [
-            {
-              "id": "Nome",
-              "displayName": "Nome",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "WhatsApp",
-              "displayName": "WhatsApp",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "PushName",
-              "displayName": "PushName",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "Ultima Mensagem",
-              "displayName": "Ultima Mensagem",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "Data Ultima Conversa",
-              "displayName": "Data Ultima Conversa",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "Tipo",
-              "displayName": "Tipo",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "Importado em",
-              "displayName": "Importado em",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            }
-          ]
+            { "id": "Nome", "displayName": "Nome", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "WhatsApp", "displayName": "WhatsApp", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "PushName", "displayName": "PushName", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "Ultima Mensagem", "displayName": "Ultima Mensagem", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "Data Ultima Conversa", "displayName": "Data Ultima Conversa", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "Tipo", "displayName": "Tipo", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "Importado em", "displayName": "Importado em", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
         },
         "options": {}
       },
-      "id": "a1b2c3d4-0003-0003-0003-000000000004",
+      "id": "fed4b339-b498-4ffb-b3a9-68c3d9a5b4e9",
       "name": "Sheets - Inserir Novo Lead",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
-      "position": [900, 180],
-      "continueOnFail": true,
+      "position": [120, -96],
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 65000,
+      "continueOnFail": false,
       "credentials": {
         "googleApi": {
           "id": "yt8WjydsfYap3rmO",
@@ -181,116 +167,87 @@
       "parameters": {
         "assignments": {
           "assignments": [
-            {
-              "id": "ins-001",
-              "name": "resultado",
-              "value": "inserido",
-              "type": "string"
-            },
-            {
-              "id": "ins-002",
-              "name": "WhatsApp",
-              "value": "={{ $('Execute Workflow Trigger').item.json.WhatsApp }}",
-              "type": "string"
-            },
-            {
-              "id": "ins-003",
-              "name": "Nome",
-              "value": "={{ $('Execute Workflow Trigger').item.json.Nome }}",
-              "type": "string"
-            }
+            { "id": "ret-001", "name": "resultado", "value": "inserido", "type": "string" },
+            { "id": "ret-002", "name": "WhatsApp", "value": "={{ $json.WhatsApp }}", "type": "string" },
+            { "id": "ret-003", "name": "Nome", "value": "={{ $json.Nome }}", "type": "string" }
           ]
         },
         "options": {}
       },
-      "id": "a1b2c3d4-0003-0003-0003-000000000005",
+      "id": "4e137dca-ddcc-4f01-8ab4-14b86acf86e9",
       "name": "Return - Inserido",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [1120, 180]
+      "position": [340, -96]
     },
     {
       "parameters": {
         "assignments": {
           "assignments": [
-            {
-              "id": "dup-001",
-              "name": "resultado",
-              "value": "duplicado",
-              "type": "string"
-            },
-            {
-              "id": "dup-002",
-              "name": "WhatsApp",
-              "value": "={{ $('Execute Workflow Trigger').item.json.WhatsApp }}",
-              "type": "string"
-            },
-            {
-              "id": "dup-003",
-              "name": "Nome",
-              "value": "={{ $('Execute Workflow Trigger').item.json.Nome }}",
-              "type": "string"
-            }
+            { "id": "ret-004", "name": "resultado", "value": "duplicado", "type": "string" },
+            { "id": "ret-005", "name": "mensagem", "value": "={{ $json.mensagem || 'Todos duplicados' }}", "type": "string" }
           ]
         },
         "options": {}
       },
-      "id": "a1b2c3d4-0003-0003-0003-000000000006",
+      "id": "5b0d6b3f-383f-4a0f-8c30-4272be123727",
       "name": "Return - Duplicado",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [900, 420]
+      "position": [120, 96]
     }
   ],
   "connections": {
     "Execute Workflow Trigger": {
       "main": [
         [
-          {
-            "node": "Sheets - Verificar Duplicata",
-            "type": "main",
-            "index": 0
-          }
+          { "node": "Code - Coletar Leads", "type": "main", "index": 0 }
         ]
       ]
     },
-    "Sheets - Verificar Duplicata": {
+    "Code - Coletar Leads": {
       "main": [
         [
-          {
-            "node": "IF - É Novo?",
-            "type": "main",
-            "index": 0
-          }
+          { "node": "Sheets - Ler Números Existentes", "type": "main", "index": 0 },
+          { "node": "Merge - Juntar", "type": "main", "index": 1 }
         ]
       ]
     },
-    "IF - É Novo?": {
+    "Sheets - Ler Números Existentes": {
       "main": [
         [
-          {
-            "node": "Sheets - Inserir Novo Lead",
-            "type": "main",
-            "index": 0
-          }
+          { "node": "Merge - Juntar", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Merge - Juntar": {
+      "main": [
+        [
+          { "node": "Code - Filtrar Novos", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Code - Filtrar Novos": {
+      "main": [
+        [
+          { "node": "IF - Tem Leads Novos?", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "IF - Tem Leads Novos?": {
+      "main": [
+        [
+          { "node": "Sheets - Inserir Novo Lead", "type": "main", "index": 0 }
         ],
         [
-          {
-            "node": "Return - Duplicado",
-            "type": "main",
-            "index": 0
-          }
+          { "node": "Return - Duplicado", "type": "main", "index": 0 }
         ]
       ]
     },
     "Sheets - Inserir Novo Lead": {
       "main": [
         [
-          {
-            "node": "Return - Inserido",
-            "type": "main",
-            "index": 0
-          }
+          { "node": "Return - Inserido", "type": "main", "index": 0 }
         ]
       ]
     }
