@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Captador de Leads – Barbearia</title>
+  <title>Captador de Leads</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: #0d0d0d;
@@ -17,225 +16,173 @@
       justify-content: center;
       padding: 32px 16px;
     }
-
     .card {
       background: #1c1c1c;
       border: 1px solid #2e2e2e;
       border-radius: 20px;
-      padding: 48px 40px;
+      padding: 40px;
       width: 100%;
-      max-width: 440px;
+      max-width: 480px;
       box-shadow: 0 12px 48px rgba(0,0,0,0.6);
     }
-
-    /* ── LOGIN ─────────────────────────────── */
     #loginScreen { display: flex; flex-direction: column; }
     #appScreen   { display: none; flex-direction: column; }
 
-    .icon {
-      font-size: 2.4rem;
-      margin-bottom: 12px;
-    }
+    .icon { font-size: 2.2rem; margin-bottom: 10px; }
+    h1 { font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .subtitle { font-size: 0.85rem; color: #555; margin-bottom: 28px; }
 
-    h1 {
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 6px;
-    }
-
-    .subtitle {
-      font-size: 0.88rem;
-      color: #555;
-      margin-bottom: 36px;
-    }
-
-    .field-group {
-      margin-bottom: 20px;
-    }
-
+    .field-group { margin-bottom: 16px; }
     label {
-      display: block;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #666;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
+      display: block; font-size: 0.72rem; font-weight: 600; color: #666;
+      text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px;
     }
-
     input {
-      width: 100%;
-      background: #111;
-      border: 1px solid #2e2e2e;
-      border-radius: 10px;
-      color: #f0f0f0;
-      font-size: 0.95rem;
-      padding: 13px 15px;
-      outline: none;
-      transition: border-color 0.2s;
+      width: 100%; background: #111; border: 1px solid #2e2e2e;
+      border-radius: 10px; color: #f0f0f0; font-size: 0.92rem;
+      padding: 12px 14px; outline: none; transition: border-color 0.2s;
     }
-
-    input:focus {
-      border-color: #4ade80;
-    }
+    input:focus { border-color: #4ade80; }
+    input[type="password"] { letter-spacing: 2px; }
 
     .erro-login {
-      color: #f87171;
-      font-size: 0.82rem;
-      margin-top: 10px;
-      min-height: 18px;
-      text-align: center;
+      color: #f87171; font-size: 0.82rem; margin-top: 8px;
+      min-height: 18px; text-align: center;
     }
 
-    /* ── BOTÕES ────────────────────────────── */
+    /* ── BOTÕES ── */
     .btn {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      letter-spacing: 0.5px;
-      margin-top: 8px;
+      width: 100%; padding: 13px; border: none; border-radius: 10px;
+      font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      transition: all 0.2s; letter-spacing: 0.5px; margin-top: 8px;
+    }
+    .btn-primary { background: #4ade80; color: #000; }
+    .btn-primary:hover:not(:disabled) { background: #22c55e; transform: translateY(-1px); }
+    .btn-primary:disabled { background: #1a3a2a; color: #3a6a4a; cursor: not-allowed; }
+    .btn-secondary {
+      background: transparent; color: #555; border: 1px solid #333;
+      font-size: 0.8rem; padding: 9px; margin-top: 6px;
+    }
+    .btn-secondary:hover { color: #aaa; border-color: #555; }
+    .btn-save {
+      background: #1e3a5f; color: #60a5fa; border: 1px solid #2a4a7f;
+      font-size: 0.82rem; padding: 10px; margin-top: 4px;
+    }
+    .btn-save:hover { background: #254a7f; }
+
+    /* ── CONFIGURAÇÕES ── */
+    .config-toggle {
+      display: flex; align-items: center; gap: 8px;
+      cursor: pointer; margin-bottom: 12px; color: #555;
+      font-size: 0.78rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.8px; user-select: none;
+    }
+    .config-toggle:hover { color: #888; }
+    .config-toggle .arrow { transition: transform 0.2s; font-size: 0.7rem; }
+    .config-toggle.open .arrow { transform: rotate(90deg); }
+    .config-panel {
+      background: #151515; border: 1px solid #252525; border-radius: 12px;
+      padding: 18px; margin-bottom: 18px; display: none;
+    }
+    .config-panel.open { display: block; }
+    .config-saved {
+      color: #4ade80; font-size: 0.75rem; margin-top: 8px;
+      text-align: center; min-height: 16px;
     }
 
-    .btn-primary {
-      background: #4ade80;
-      color: #000;
-    }
+    /* ── DIVIDER ── */
+    .divider { border: none; border-top: 1px solid #222; margin: 22px 0; }
 
-    .btn-primary:hover:not(:disabled) {
-      background: #22c55e;
-      transform: translateY(-1px);
-    }
-
-    .btn-primary:disabled {
-      background: #1a3a2a;
-      color: #3a6a4a;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    /* ── DIVIDER ───────────────────────────── */
-    .divider {
-      border: none;
-      border-top: 1px solid #222;
-      margin: 28px 0;
-    }
-
-    /* ── STATS ─────────────────────────────── */
+    /* ── STATS ── */
     .stats-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 28px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px;
     }
-
     .stat-box {
-      background: #111;
-      border: 1px solid #2a2a2a;
-      border-radius: 12px;
-      padding: 18px 12px;
-      text-align: center;
+      background: #111; border: 1px solid #2a2a2a;
+      border-radius: 12px; padding: 16px 10px; text-align: center;
     }
-
     .stat-value {
-      font-size: 2.2rem;
-      font-weight: 700;
-      color: #4ade80;
-      line-height: 1;
-      margin-bottom: 6px;
+      font-size: 2rem; font-weight: 700; color: #4ade80;
+      line-height: 1; margin-bottom: 5px;
     }
-
     .stat-value.dup { color: #facc15; }
     .stat-value.err { color: #f87171; }
     .stat-value.tot { color: #60a5fa; }
+    .stat-label { font-size: 0.68rem; color: #555; text-transform: uppercase; letter-spacing: 0.8px; }
 
-    .stat-label {
-      font-size: 0.72rem;
-      color: #555;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-    }
-
-    /* ── STATUS ────────────────────────────── */
+    /* ── STATUS ── */
     .status-box {
-      background: #111;
-      border: 1px solid #2a2a2a;
-      border-radius: 10px;
-      padding: 14px 16px;
-      font-size: 0.88rem;
-      color: #888;
-      min-height: 50px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 20px;
+      background: #111; border: 1px solid #2a2a2a; border-radius: 10px;
+      padding: 13px 15px; font-size: 0.85rem; color: #888; min-height: 48px;
+      display: flex; align-items: center; gap: 10px; margin-top: 18px;
     }
-
     .dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: #333;
-      flex-shrink: 0;
+      width: 9px; height: 9px; border-radius: 50%;
+      background: #333; flex-shrink: 0;
     }
-
     .dot.running { background: #facc15; animation: pulse 1s infinite; }
     .dot.success { background: #4ade80; }
     .dot.error   { background: #f87171; }
-
     @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0.2; }
+      0%, 100% { opacity: 1; } 50% { opacity: 0.2; }
     }
 
-    .footer {
-      margin-top: 20px;
-      font-size: 0.75rem;
-      color: #3a3a3a;
-      text-align: center;
-      line-height: 1.5;
+    .restantes-box {
+      background: #1a2a1a; border: 1px solid #2a3a2a; border-radius: 10px;
+      padding: 10px 14px; font-size: 0.8rem; color: #4ade80;
+      margin-top: 10px; display: none; text-align: center;
     }
+
+    .footer { margin-top: 18px; font-size: 0.72rem; color: #3a3a3a; text-align: center; }
   </style>
 </head>
 <body>
 
-  <!-- ── TELA DE LOGIN ───────────────────── -->
+  <!-- ── LOGIN ── -->
   <div class="card" id="loginScreen">
     <div class="icon">🔐</div>
     <h1>Acesso Restrito</h1>
-    <p class="subtitle">Captador de Leads — Barbearia</p>
-
+    <p class="subtitle">Captador de Leads WhatsApp</p>
     <div class="field-group">
       <label>Senha</label>
-      <input type="password" id="senhaInput" placeholder="Digite a senha"
+      <input type="password" id="senhaInput" placeholder="••••••••"
         onkeydown="if(event.key==='Enter') entrar()" autofocus />
     </div>
-
     <button class="btn btn-primary" onclick="entrar()">ENTRAR</button>
     <p class="erro-login" id="erroLogin"></p>
   </div>
 
-  <!-- ── TELA PRINCIPAL ──────────────────── -->
+  <!-- ── APP ── -->
   <div class="card" id="appScreen">
     <div class="icon">📋</div>
     <h1>Importador de Leads</h1>
     <p class="subtitle">WhatsApp → Google Sheets</p>
 
-    <div class="field-group">
-      <label>Instância Evolution API</label>
-      <input type="text" id="instance" value="SeoSalim" placeholder="nome da instância" />
+    <!-- Configurações (colapsável, salvas no navegador) -->
+    <div class="config-toggle" id="configToggle" onclick="toggleConfig()">
+      <span class="arrow">▶</span> Configurações
+    </div>
+    <div class="config-panel" id="configPanel">
+      <div class="field-group">
+        <label>Evolution API URL</label>
+        <input type="url" id="cfgEvolutionUrl" placeholder="http://seu-servidor.host" />
+      </div>
+      <div class="field-group">
+        <label>API Key</label>
+        <input type="password" id="cfgApiKey" placeholder="sua-api-key" />
+      </div>
+      <div class="field-group">
+        <label>URL do Webhook n8n</label>
+        <input type="url" id="cfgWebhookUrl" placeholder="https://seu-n8n/webhook/..." />
+      </div>
+      <button class="btn btn-save" onclick="salvarConfig()">💾 SALVAR CONFIGURAÇÕES</button>
+      <p class="config-saved" id="configSaved"></p>
     </div>
 
+    <!-- Instância (muda por uso) -->
     <div class="field-group">
-      <label>URL do Webhook n8n</label>
-      <input type="url" id="webhookUrl"
-        value="https://SEU_N8N/webhook/importar-leads-barbearia"
-        placeholder="https://..." />
+      <label>Instância Evolution API</label>
+      <input type="text" id="instance" placeholder="nome-da-instancia" />
     </div>
 
     <hr class="divider" />
@@ -262,52 +209,115 @@
     <button class="btn btn-primary" id="btnImportar" onclick="importar()">
       ▶ IMPORTAR LEADS
     </button>
+    <button class="btn btn-secondary" onclick="limparSessao()">Sair</button>
 
     <div class="status-box">
       <div class="dot" id="dot"></div>
       <span id="statusMsg">Aguardando...</span>
     </div>
 
-    <p class="footer">Dados salvos em <strong>Leads_Barbearia → Leads</strong></p>
+    <div class="restantes-box" id="restantesBox"></div>
+
+    <p class="footer">Leads salvos no Google Sheets configurado no n8n</p>
   </div>
 
   <script>
     const SENHA = '34266450';
+    const LS    = 'captador_config';
 
+    // ── Inicialização ──────────────────────────────────────────
+    function init() {
+      const cfg = carregarConfig();
+      if (cfg) {
+        document.getElementById('cfgEvolutionUrl').value = cfg.evolutionUrl || '';
+        document.getElementById('cfgApiKey').value       = cfg.apikey       || '';
+        document.getElementById('cfgWebhookUrl').value   = cfg.webhookUrl   || '';
+        document.getElementById('instance').value        = cfg.lastInstance || '';
+      }
+    }
+
+    // ── Login ──────────────────────────────────────────────────
     function entrar() {
       const digitado = document.getElementById('senhaInput').value;
       if (digitado === SENHA) {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('appScreen').style.display   = 'flex';
+        init();
       } else {
-        document.getElementById('erroLogin').textContent = '❌ Senha incorreta. Tente novamente.';
+        document.getElementById('erroLogin').textContent = '❌ Senha incorreta.';
         document.getElementById('senhaInput').value = '';
         document.getElementById('senhaInput').focus();
       }
     }
 
-    async function importar() {
-      const instance   = document.getElementById('instance').value.trim();
-      const webhookUrl = document.getElementById('webhookUrl').value.trim();
-      const btn        = document.getElementById('btnImportar');
-      const dot        = document.getElementById('dot');
+    function limparSessao() {
+      document.getElementById('appScreen').style.display   = 'none';
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('senhaInput').value = '';
+      resetStats();
+    }
 
-      if (!instance || !webhookUrl || webhookUrl.includes('SEU_N8N')) {
-        dot.className = 'dot error';
-        document.getElementById('statusMsg').textContent = '⚠️ Preencha a instância e a URL do webhook.';
-        return;
+    // ── Config ─────────────────────────────────────────────────
+    function toggleConfig() {
+      const toggle = document.getElementById('configToggle');
+      const panel  = document.getElementById('configPanel');
+      toggle.classList.toggle('open');
+      panel.classList.toggle('open');
+    }
+
+    function salvarConfig() {
+      const cfg = {
+        evolutionUrl: document.getElementById('cfgEvolutionUrl').value.trim(),
+        apikey:       document.getElementById('cfgApiKey').value.trim(),
+        webhookUrl:   document.getElementById('cfgWebhookUrl').value.trim(),
+        lastInstance: document.getElementById('instance').value.trim()
+      };
+      localStorage.setItem(LS, JSON.stringify(cfg));
+      const msg = document.getElementById('configSaved');
+      msg.textContent = '✅ Configurações salvas!';
+      setTimeout(() => msg.textContent = '', 3000);
+    }
+
+    function carregarConfig() {
+      try { return JSON.parse(localStorage.getItem(LS)) || null; }
+      catch { return null; }
+    }
+
+    // ── Importar ───────────────────────────────────────────────
+    async function importar() {
+      const instance    = document.getElementById('instance').value.trim();
+      const cfg         = carregarConfig() || {};
+      const evolutionUrl = (document.getElementById('cfgEvolutionUrl').value.trim() || cfg.evolutionUrl || '').replace(/\/$/, '');
+      const apikey      = document.getElementById('cfgApiKey').value.trim() || cfg.apikey || '';
+      const webhookUrl  = document.getElementById('cfgWebhookUrl').value.trim() || cfg.webhookUrl || '';
+      const btn         = document.getElementById('btnImportar');
+      const dot         = document.getElementById('dot');
+
+      if (!instance) {
+        setStatus('error', '⚠️ Informe o nome da instância.'); return;
+      }
+      if (!webhookUrl || webhookUrl.includes('seu-n8n')) {
+        setStatus('error', '⚠️ Configure e salve a URL do Webhook nas Configurações.'); return;
+      }
+      if (!evolutionUrl) {
+        setStatus('error', '⚠️ Configure e salve a Evolution API URL nas Configurações.'); return;
       }
 
+      // Salva instância usada
+      const cfg2 = carregarConfig() || {};
+      cfg2.lastInstance = instance;
+      localStorage.setItem(LS, JSON.stringify(cfg2));
+
       btn.disabled = true;
-      dot.className = 'dot running';
-      document.getElementById('statusMsg').textContent = '⏳ Importando leads... aguarde.';
+      setStatus('running', '⏳ Importando leads... aguarde.');
       resetStats();
+      document.getElementById('restantesBox').style.display = 'none';
 
       try {
         const res = await fetch(webhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ instance })
+          body: JSON.stringify({ instance, evolutionUrl, apikey })
         });
 
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -319,19 +329,28 @@
           document.getElementById('statInseridos').textContent  = e.inseridos  ?? '–';
           document.getElementById('statDuplicados').textContent = e.duplicados ?? '–';
           document.getElementById('statErros').textContent      = e.erros      ?? '–';
-          dot.className = 'dot success';
-          document.getElementById('statusMsg').textContent =
-            `✅ Concluído — ${e.inseridos} novos leads salvos.`;
+          setStatus('success', `✅ Concluído — ${e.inseridos ?? 0} novos leads salvos.`);
+
+          if (e.restantes && e.restantes > 0) {
+            const rb = document.getElementById('restantesBox');
+            rb.textContent = `⚡ Ainda há ${e.restantes} leads para importar. Rode novamente!`;
+            rb.style.display = 'block';
+          }
         } else {
           throw new Error(data.mensagem || 'Resposta inesperada');
         }
 
       } catch (err) {
-        dot.className = 'dot error';
-        document.getElementById('statusMsg').textContent = '❌ Erro: ' + err.message;
+        setStatus('error', '❌ Erro: ' + err.message);
       } finally {
         btn.disabled = false;
       }
+    }
+
+    // ── Helpers ────────────────────────────────────────────────
+    function setStatus(tipo, msg) {
+      document.getElementById('dot').className = 'dot ' + tipo;
+      document.getElementById('statusMsg').textContent = msg;
     }
 
     function resetStats() {
