@@ -226,12 +226,22 @@ const SENHA   = '34266450';
 const CFG_KEY = 'captador_config';
 let cfg = {}, instSel = null;
 
+// Defaults pré-configurados — editáveis nas Configurações
+const DEFAULTS = {
+  evolutionUrl: 'http://n8n-evolution.ndjgby.easypanel.host',
+  webhookUrl:   'https://n8n-n8n-start.ndjgby.easypanel.host/webhook/importar-leads-barbearia',
+  apikey:       ''
+};
+
 // ─── Config ───────────────────────────────────────────────────
 function loadConfig() {
   try { cfg = JSON.parse(localStorage.getItem(CFG_KEY) || '{}'); } catch(e) { cfg = {}; }
-  document.getElementById('cfgUrl').value = cfg.evolutionUrl || '';
-  document.getElementById('cfgKey').value = cfg.apikey       || '';
-  document.getElementById('cfgWh').value  = cfg.webhookUrl   || '';
+  document.getElementById('cfgUrl').value = cfg.evolutionUrl || DEFAULTS.evolutionUrl;
+  document.getElementById('cfgKey').value = cfg.apikey       || DEFAULTS.apikey;
+  document.getElementById('cfgWh').value  = cfg.webhookUrl   || DEFAULTS.webhookUrl;
+  // Garante que os defaults fiquem no cfg também
+  cfg.evolutionUrl = cfg.evolutionUrl || DEFAULTS.evolutionUrl;
+  cfg.webhookUrl   = cfg.webhookUrl   || DEFAULTS.webhookUrl;
 }
 
 function saveConfig() {
@@ -308,9 +318,16 @@ async function fetchInstances() {
     if (list.length > 0) log(`🔍 ${list.length} instância(s) encontrada(s)`, 'inf');
 
   } catch(e) {
+    const isCors = e.message === 'Failed to fetch';
+    const helpMsg = isCors
+      ? `❌ CORS bloqueado — abra o arquivo via servidor local.<br>
+         <small style="color:#555">No terminal, na pasta do arquivo:<br>
+         <code style="color:#facc15">python -m http.server 8080</code><br>
+         Depois acesse: <code style="color:#facc15">http://localhost:8080/dashboard.html</code></small>`
+      : `❌ ${e.message}`;
     document.getElementById('instList').innerHTML =
-      `<div class="placeholder" style="color:#f87171">❌ ${e.message}</div>`;
-    log(`Erro ao buscar instâncias: ${e.message}`, 'err');
+      `<div class="placeholder" style="line-height:1.7">${helpMsg}</div>`;
+    log(`Erro: ${isCors ? 'CORS bloqueado (abra via localhost)' : e.message}`, 'err');
     showLog();
   }
 
