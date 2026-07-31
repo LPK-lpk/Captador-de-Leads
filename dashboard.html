@@ -8,21 +8,13 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #0d0d0d;
-      color: #f0f0f0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 32px 16px;
+      background: #0d0d0d; color: #f0f0f0;
+      min-height: 100vh; display: flex;
+      align-items: center; justify-content: center; padding: 32px 16px;
     }
     .card {
-      background: #1c1c1c;
-      border: 1px solid #2e2e2e;
-      border-radius: 20px;
-      padding: 40px;
-      width: 100%;
-      max-width: 480px;
+      background: #1c1c1c; border: 1px solid #2e2e2e; border-radius: 20px;
+      padding: 36px; width: 100%; max-width: 500px;
       box-shadow: 0 12px 48px rgba(0,0,0,0.6);
     }
     #loginScreen { display: flex; flex-direction: column; }
@@ -32,331 +24,417 @@
     h1 { font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
     .subtitle { font-size: 0.85rem; color: #555; margin-bottom: 28px; }
 
-    .field-group { margin-bottom: 16px; }
+    .field-group { margin-bottom: 14px; }
     label {
       display: block; font-size: 0.72rem; font-weight: 600; color: #666;
       text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px;
     }
-    input {
+    input[type="text"], input[type="password"], input[type="url"] {
       width: 100%; background: #111; border: 1px solid #2e2e2e;
       border-radius: 10px; color: #f0f0f0; font-size: 0.92rem;
       padding: 12px 14px; outline: none; transition: border-color 0.2s;
     }
     input:focus { border-color: #4ade80; }
-    input[type="password"] { letter-spacing: 2px; }
 
-    .erro-login {
-      color: #f87171; font-size: 0.82rem; margin-top: 8px;
-      min-height: 18px; text-align: center;
-    }
-
-    /* ── BOTÕES ── */
     .btn {
-      width: 100%; padding: 13px; border: none; border-radius: 10px;
-      font-size: 0.95rem; font-weight: 700; cursor: pointer;
-      transition: all 0.2s; letter-spacing: 0.5px; margin-top: 8px;
+      width: 100%; padding: 13px; border: none; border-radius: 11px;
+      font-size: 0.95rem; font-weight: 600; cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
     }
-    .btn-primary { background: #4ade80; color: #000; }
-    .btn-primary:hover:not(:disabled) { background: #22c55e; transform: translateY(-1px); }
-    .btn-primary:disabled { background: #1a3a2a; color: #3a6a4a; cursor: not-allowed; }
-    .btn-secondary {
-      background: transparent; color: #555; border: 1px solid #333;
-      font-size: 0.8rem; padding: 9px; margin-top: 6px;
+    .btn:hover:not(:disabled) { opacity: 0.88; }
+    .btn:active:not(:disabled) { transform: scale(0.98); }
+    .btn-primary   { background: #4ade80; color: #0d0d0d; }
+    .btn-secondary { background: #2a2a2a; color: #bbb; }
+    .btn-sm {
+      width: auto; padding: 8px 14px; font-size: 0.8rem;
+      border-radius: 8px; background: #2a2a2a; color: #999;
+      border: 1px solid #333;
     }
-    .btn-secondary:hover { color: #aaa; border-color: #555; }
-    .btn-save {
-      background: #1e3a5f; color: #60a5fa; border: 1px solid #2a4a7f;
-      font-size: 0.82rem; padding: 10px; margin-top: 4px;
-    }
-    .btn-save:hover { background: #254a7f; }
+    .btn-sm:hover:not(:disabled) { border-color: #4ade80; color: #4ade80; opacity: 1; }
+    .btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-    /* ── CONFIGURAÇÕES ── */
-    .config-toggle {
-      display: flex; align-items: center; gap: 8px;
-      cursor: pointer; margin-bottom: 12px; color: #555;
-      font-size: 0.78rem; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 0.8px; user-select: none;
-    }
-    .config-toggle:hover { color: #888; }
-    .config-toggle .arrow { transition: transform 0.2s; font-size: 0.7rem; }
-    .config-toggle.open .arrow { transform: rotate(90deg); }
-    .config-panel {
-      background: #151515; border: 1px solid #252525; border-radius: 12px;
-      padding: 18px; margin-bottom: 18px; display: none;
-    }
-    .config-panel.open { display: block; }
-    .config-saved {
-      color: #4ade80; font-size: 0.75rem; margin-top: 8px;
-      text-align: center; min-height: 16px;
-    }
+    .msg { font-size: 0.82rem; margin-top: 8px; min-height: 18px; text-align: center; }
 
-    /* ── DIVIDER ── */
-    .divider { border: none; border-top: 1px solid #222; margin: 22px 0; }
+    /* Config */
+    .cfg-toggle {
+      display: flex; align-items: center; gap: 7px;
+      background: none; border: none; cursor: pointer;
+      color: #555; font-size: 0.78rem; padding: 0; margin-bottom: 14px;
+      transition: color 0.2s; width: fit-content;
+    }
+    .cfg-toggle:hover { color: #888; }
+    .cfg-toggle .arr { transition: transform 0.2s; display: inline-block; }
+    .cfg-toggle.open .arr { transform: rotate(90deg); }
+    .cfg-box {
+      background: #131313; border: 1px solid #222; border-radius: 12px;
+      padding: 16px; margin-bottom: 20px; display: none;
+    }
+    .cfg-box.vis { display: block; }
+    .cfg-row { display: flex; gap: 10px; }
+    .cfg-row .field-group { flex: 1; margin-bottom: 14px; }
 
-    /* ── STATS ── */
-    .stats-row {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px;
+    /* Instâncias */
+    .sec-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
     }
-    .stat-box {
-      background: #111; border: 1px solid #2a2a2a;
-      border-radius: 12px; padding: 16px 10px; text-align: center;
+    .sec-label {
+      font-size: 0.72rem; font-weight: 600; color: #666;
+      text-transform: uppercase; letter-spacing: 1px;
     }
-    .stat-value {
-      font-size: 2rem; font-weight: 700; color: #4ade80;
-      line-height: 1; margin-bottom: 5px;
+    .inst-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .inst-card {
+      display: flex; align-items: center; gap: 13px;
+      background: #111; border: 2px solid #252525; border-radius: 12px;
+      padding: 13px 15px; cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
     }
-    .stat-value.dup { color: #facc15; }
-    .stat-value.err { color: #f87171; }
-    .stat-value.tot { color: #60a5fa; }
-    .stat-label { font-size: 0.68rem; color: #555; text-transform: uppercase; letter-spacing: 0.8px; }
+    .inst-card:hover:not(.disc) { border-color: #383838; background: #161616; }
+    .inst-card.sel  { border-color: #4ade80; background: #0c1e12; }
+    .inst-card.disc { opacity: 0.45; cursor: not-allowed; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .dot-g { background: #4ade80; box-shadow: 0 0 7px #4ade8066; }
+    .dot-r { background: #f87171; }
+    .dot-y { background: #facc15; }
+    .inst-info { flex: 1; min-width: 0; }
+    .inst-name { font-size: 0.92rem; font-weight: 600; color: #e5e5e5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .inst-num  { font-size: 0.76rem; color: #505050; margin-top: 2px; }
+    .badge {
+      font-size: 0.7rem; padding: 3px 8px; border-radius: 6px;
+      font-weight: 700; flex-shrink: 0; white-space: nowrap;
+    }
+    .badge-ok  { background: #0c2016; color: #4ade80; }
+    .badge-off { background: #280f0f; color: #f87171; }
+    .badge-oth { background: #1c1c08; color: #facc15; }
+    .placeholder { color: #3a3a3a; font-size: 0.83rem; text-align: center; padding: 18px 0; }
 
-    /* ── STATUS ── */
-    .status-box {
-      background: #111; border: 1px solid #2a2a2a; border-radius: 10px;
-      padding: 13px 15px; font-size: 0.85rem; color: #888; min-height: 48px;
-      display: flex; align-items: center; gap: 10px; margin-top: 18px;
-    }
-    .dot {
-      width: 9px; height: 9px; border-radius: 50%;
-      background: #333; flex-shrink: 0;
-    }
-    .dot.running { background: #facc15; animation: pulse 1s infinite; }
-    .dot.success { background: #4ade80; }
-    .dot.error   { background: #f87171; }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; } 50% { opacity: 0.2; }
-    }
+    /* Stats */
+    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+    .stat  { background: #111; border: 1px solid #222; border-radius: 10px; padding: 12px; text-align: center; }
+    .stat-n { font-size: 1.35rem; font-weight: 700; color: #4ade80; }
+    .stat-l { font-size: 0.68rem; color: #555; margin-top: 3px; }
 
-    .restantes-box {
-      background: #1a2a1a; border: 1px solid #2a3a2a; border-radius: 10px;
-      padding: 10px 14px; font-size: 0.8rem; color: #4ade80;
-      margin-top: 10px; display: none; text-align: center;
+    /* Log */
+    .log {
+      background: #080808; border: 1px solid #1e1e1e; border-radius: 10px;
+      padding: 12px; font-size: 0.77rem; color: #555; margin-top: 14px;
+      max-height: 130px; overflow-y: auto; display: none;
     }
+    .log.vis { display: block; }
+    .l-ok   { color: #4ade80; }
+    .l-err  { color: #f87171; }
+    .l-inf  { color: #60a5fa; }
+    .l-warn { color: #facc15; }
+    .l-line { padding: 2px 0; line-height: 1.5; }
 
-    .footer { margin-top: 18px; font-size: 0.72rem; color: #3a3a3a; text-align: center; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spin {
+      display: inline-block; width: 13px; height: 13px;
+      border: 2px solid #0d0d0d44; border-top-color: #0d0d0d;
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+      margin-right: 7px; vertical-align: middle;
+    }
+    .spin-w { border-color: #ffffff44; border-top-color: #fff; }
+
+    .divider { border: none; border-top: 1px solid #1e1e1e; margin: 18px 0; }
+    .app-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 22px; }
+    .app-title { font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .app-sub   { font-size: 0.76rem; color: #444; margin-top: 2px; }
+    .exit-btn  {
+      background: none; border: none; color: #3a3a3a; font-size: 0.75rem;
+      cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: color 0.2s;
+    }
+    .exit-btn:hover { color: #f87171; }
   </style>
 </head>
 <body>
 
-  <!-- ── LOGIN ── -->
-  <div class="card" id="loginScreen">
-    <div class="icon">🔐</div>
-    <h1>Acesso Restrito</h1>
-    <p class="subtitle">Captador de Leads WhatsApp</p>
-    <div class="field-group">
-      <label>Senha</label>
-      <input type="password" id="senhaInput" placeholder="••••••••"
-        onkeydown="if(event.key==='Enter') entrar()" autofocus />
+<!-- LOGIN -->
+<div class="card" id="loginScreen">
+  <div class="icon">📲</div>
+  <h1>Captador de Leads</h1>
+  <p class="subtitle">Sistema Evolution API + n8n</p>
+  <div class="field-group">
+    <label>Senha de Acesso</label>
+    <input type="password" id="pw" placeholder="••••••••"
+           onkeydown="if(event.key==='Enter') login()" autofocus />
+  </div>
+  <button class="btn btn-primary" onclick="login()">Entrar</button>
+  <p class="msg" id="loginErr" style="color:#f87171"></p>
+</div>
+
+<!-- APP -->
+<div class="card" id="appScreen">
+
+  <div class="app-top">
+    <div>
+      <div class="app-title">📲 Captador de Leads</div>
+      <div class="app-sub">Evolution API → Google Sheets</div>
     </div>
-    <button class="btn btn-primary" onclick="entrar()">ENTRAR</button>
-    <p class="erro-login" id="erroLogin"></p>
+    <button class="exit-btn" onclick="logout()">Sair</button>
   </div>
 
-  <!-- ── APP ── -->
-  <div class="card" id="appScreen">
-    <div class="icon">📋</div>
-    <h1>Importador de Leads</h1>
-    <p class="subtitle">WhatsApp → Google Sheets</p>
-
-    <!-- Configurações (colapsável, salvas no navegador) -->
-    <div class="config-toggle" id="configToggle" onclick="toggleConfig()">
-      <span class="arrow">▶</span> Configurações
-    </div>
-    <div class="config-panel" id="configPanel">
+  <!-- Configurações -->
+  <button class="cfg-toggle" id="cfgBtn" onclick="toggleCfg()">
+    <span class="arr">▶</span> Configurações
+  </button>
+  <div class="cfg-box" id="cfgBox">
+    <div class="cfg-row">
       <div class="field-group">
-        <label>Evolution API URL</label>
-        <input type="url" id="cfgEvolutionUrl" placeholder="http://seu-servidor.host" />
+        <label>Evolution URL</label>
+        <input type="url" id="cfgUrl" placeholder="https://..." />
       </div>
       <div class="field-group">
         <label>API Key</label>
-        <input type="password" id="cfgApiKey" placeholder="sua-api-key" />
+        <input type="text" id="cfgKey" placeholder="••••••••" />
       </div>
-      <div class="field-group">
-        <label>URL do Webhook n8n</label>
-        <input type="url" id="cfgWebhookUrl" placeholder="https://seu-n8n/webhook/..." />
-      </div>
-      <button class="btn btn-save" onclick="salvarConfig()">💾 SALVAR CONFIGURAÇÕES</button>
-      <p class="config-saved" id="configSaved"></p>
     </div>
-
-    <!-- Instância (muda por uso) -->
     <div class="field-group">
-      <label>Instância Evolution API</label>
-      <input type="text" id="instance" placeholder="nome-da-instancia" />
+      <label>Webhook n8n</label>
+      <input type="url" id="cfgWh" placeholder="https://..." />
     </div>
-
-    <hr class="divider" />
-
-    <div class="stats-row">
-      <div class="stat-box">
-        <div class="stat-value tot" id="statTotal">–</div>
-        <div class="stat-label">Total</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-value" id="statInseridos">–</div>
-        <div class="stat-label">Novos</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-value dup" id="statDuplicados">–</div>
-        <div class="stat-label">Duplicados</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-value err" id="statErros">–</div>
-        <div class="stat-label">Erros</div>
-      </div>
-    </div>
-
-    <button class="btn btn-primary" id="btnImportar" onclick="importar()">
-      ▶ IMPORTAR LEADS
-    </button>
-    <button class="btn btn-secondary" onclick="limparSessao()">Sair</button>
-
-    <div class="status-box">
-      <div class="dot" id="dot"></div>
-      <span id="statusMsg">Aguardando...</span>
-    </div>
-
-    <div class="restantes-box" id="restantesBox"></div>
-
-    <p class="footer">Leads salvos no Google Sheets configurado no n8n</p>
+    <button class="btn btn-secondary" onclick="saveConfig()" style="margin-top:4px">💾 Salvar</button>
+    <p class="msg" id="cfgMsg"></p>
   </div>
 
-  <script>
-    const SENHA = '34266450';
-    const LS    = 'captador_config';
+  <!-- Instâncias -->
+  <div class="sec-header">
+    <span class="sec-label">Instância WhatsApp</span>
+    <button class="btn btn-sm" id="fetchBtn" onclick="fetchInstances()">🔍 Buscar Instâncias</button>
+  </div>
+  <div class="inst-list" id="instList">
+    <div class="placeholder">Clique em "Buscar Instâncias" para listar as instâncias da Evolution</div>
+  </div>
 
-    // ── Inicialização ──────────────────────────────────────────
-    function init() {
-      const cfg = carregarConfig();
-      if (cfg) {
-        document.getElementById('cfgEvolutionUrl').value = cfg.evolutionUrl || '';
-        document.getElementById('cfgApiKey').value       = cfg.apikey       || '';
-        document.getElementById('cfgWebhookUrl').value   = cfg.webhookUrl   || '';
-        document.getElementById('instance').value        = cfg.lastInstance || '';
-      }
+  <!-- Stats -->
+  <div class="stats" id="stats" style="display:none">
+    <div class="stat"><div class="stat-n" id="sTotal">0</div><div class="stat-l">Capturados</div></div>
+    <div class="stat"><div class="stat-n" id="sNovos">0</div><div class="stat-l">Inseridos</div></div>
+    <div class="stat"><div class="stat-n" id="sDup">0</div><div class="stat-l">Duplicados</div></div>
+  </div>
+
+  <!-- Ação -->
+  <button class="btn btn-primary" id="captBtn" onclick="capturar()" disabled>
+    🚀 Capturar Leads
+  </button>
+
+  <!-- Log -->
+  <div class="log" id="logEl"></div>
+</div>
+
+<script>
+const SENHA   = '34266450';
+const CFG_KEY = 'captador_config';
+let cfg = {}, instSel = null;
+
+// ─── Config ───────────────────────────────────────────────────
+function loadConfig() {
+  try { cfg = JSON.parse(localStorage.getItem(CFG_KEY) || '{}'); } catch(e) { cfg = {}; }
+  document.getElementById('cfgUrl').value = cfg.evolutionUrl || '';
+  document.getElementById('cfgKey').value = cfg.apikey       || '';
+  document.getElementById('cfgWh').value  = cfg.webhookUrl   || '';
+}
+
+function saveConfig() {
+  cfg.evolutionUrl = document.getElementById('cfgUrl').value.trim().replace(/\/+$/, '');
+  cfg.apikey       = document.getElementById('cfgKey').value.trim();
+  cfg.webhookUrl   = document.getElementById('cfgWh').value.trim();
+  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+  showMsg('cfgMsg', '✅ Configurações salvas!', '#4ade80');
+  setTimeout(() => showMsg('cfgMsg', ''), 2500);
+}
+
+function showMsg(id, txt, color = '#f87171') {
+  const el = document.getElementById(id);
+  el.textContent = txt; el.style.color = color;
+}
+
+function toggleCfg() {
+  document.getElementById('cfgBtn').classList.toggle('open');
+  document.getElementById('cfgBox').classList.toggle('vis');
+}
+
+// ─── Auth ─────────────────────────────────────────────────────
+function login() {
+  if (document.getElementById('pw').value === SENHA) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appScreen').style.display   = 'flex';
+    loadConfig();
+  } else {
+    showMsg('loginErr', '❌ Senha incorreta');
+  }
+}
+
+function logout() {
+  document.getElementById('appScreen').style.display   = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('pw').value = '';
+  instSel = null;
+}
+
+// ─── Buscar Instâncias ────────────────────────────────────────
+async function fetchInstances() {
+  const url = (document.getElementById('cfgUrl').value.trim() || cfg.evolutionUrl || '').replace(/\/+$/, '');
+  const key  = document.getElementById('cfgKey').value.trim() || cfg.apikey || '';
+
+  if (!url || !key) {
+    alert('Preencha Evolution URL e API Key nas ⚙️ Configurações primeiro.');
+    document.getElementById('cfgBtn').classList.add('open');
+    document.getElementById('cfgBox').classList.add('vis');
+    return;
+  }
+
+  // Salva automaticamente
+  cfg.evolutionUrl = url; cfg.apikey = key;
+  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+
+  const btn = document.getElementById('fetchBtn');
+  btn.innerHTML = '<span class="spin spin-w"></span>Buscando...';
+  btn.disabled = true;
+  instSel = null;
+  document.getElementById('captBtn').disabled = true;
+
+  try {
+    const resp = await fetch(`${url}/instance/fetchInstances`, {
+      headers: { 'apikey': key, 'Content-Type': 'application/json' }
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status} — verifique a URL e API Key`);
+
+    let data = await resp.json();
+    // Normaliza: Evolution pode retornar array ou {instances:[...]} ou {data:[...]}
+    const list = Array.isArray(data) ? data
+               : (data.instances || data.data || []);
+
+    renderList(list, url, key);
+    if (list.length > 0) log(`🔍 ${list.length} instância(s) encontrada(s)`, 'inf');
+
+  } catch(e) {
+    document.getElementById('instList').innerHTML =
+      `<div class="placeholder" style="color:#f87171">❌ ${e.message}</div>`;
+    log(`Erro ao buscar instâncias: ${e.message}`, 'err');
+    showLog();
+  }
+
+  btn.innerHTML = '🔍 Buscar Instâncias';
+  btn.disabled = false;
+}
+
+function renderList(list, url, key) {
+  const el = document.getElementById('instList');
+  if (!list.length) {
+    el.innerHTML = '<div class="placeholder">Nenhuma instância encontrada nessa Evolution</div>';
+    return;
+  }
+
+  // Ordena: conectadas primeiro
+  list.sort((a, b) => {
+    const sa = a.instance?.state || a.state || '';
+    const sb = b.instance?.state || b.state || '';
+    return (sa === 'open' ? 0 : 1) - (sb === 'open' ? 0 : 1);
+  });
+
+  el.innerHTML = '';
+  list.forEach(inst => {
+    const nome   = inst.instance?.instanceName || inst.instanceName || inst.name || '?';
+    const status = (inst.instance?.state || inst.state || inst.status || 'unknown').toLowerCase();
+    const numero = (inst.instance?.owner || inst.owner || inst.number || '').replace('@s.whatsapp.net', '');
+    const ok     = status === 'open';
+    const restart= status.includes('restart') || status.includes('connecting');
+
+    const dotCls  = ok ? 'dot-g' : (restart ? 'dot-y' : 'dot-r');
+    const bdgCls  = ok ? 'badge-ok' : (restart ? 'badge-oth' : 'badge-off');
+    const bdgTxt  = ok ? 'Conectado' : (restart ? 'Reiniciando' : 'Desconectado');
+
+    const card = document.createElement('div');
+    card.className = `inst-card${ok ? '' : ' disc'}`;
+    card.innerHTML = `
+      <div class="dot ${dotCls}"></div>
+      <div class="inst-info">
+        <div class="inst-name">${nome}</div>
+        <div class="inst-num">${numero || '—'}</div>
+      </div>
+      <span class="badge ${bdgCls}">${bdgTxt}</span>
+    `;
+    if (ok) {
+      card.onclick = () => selectInst(card, nome, url, key);
+    } else {
+      card.title = 'Instância desconectada. Reconecte no painel da Evolution (escaneie o QR Code) antes de usar.';
     }
+    el.appendChild(card);
+  });
+}
 
-    // ── Login ──────────────────────────────────────────────────
-    function entrar() {
-      const digitado = document.getElementById('senhaInput').value;
-      if (digitado === SENHA) {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('appScreen').style.display   = 'flex';
-        init();
-      } else {
-        document.getElementById('erroLogin').textContent = '❌ Senha incorreta.';
-        document.getElementById('senhaInput').value = '';
-        document.getElementById('senhaInput').focus();
-      }
+function selectInst(card, nome, url, key) {
+  document.querySelectorAll('.inst-card').forEach(c => c.classList.remove('sel'));
+  card.classList.add('sel');
+  instSel = { instance: nome, evolutionUrl: url, apikey: key };
+  cfg.lastInstance = nome;
+  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+  document.getElementById('captBtn').disabled = false;
+  log(`✅ Instância selecionada: <b>${nome}</b>`, 'ok');
+  showLog();
+}
+
+// ─── Capturar ─────────────────────────────────────────────────
+async function capturar() {
+  if (!instSel) return;
+  const wh = document.getElementById('cfgWh').value.trim() || cfg.webhookUrl;
+  if (!wh) {
+    alert('Configure o Webhook n8n nas ⚙️ Configurações.');
+    document.getElementById('cfgBtn').classList.add('open');
+    document.getElementById('cfgBox').classList.add('vis');
+    return;
+  }
+
+  const btn = document.getElementById('captBtn');
+  btn.innerHTML = '<span class="spin"></span>Capturando...';
+  btn.disabled = true;
+  document.getElementById('stats').style.display = 'none';
+  showLog();
+  log(`🚀 Enviando para n8n — instância: <b>${instSel.instance}</b>`, 'inf');
+
+  try {
+    const resp = await fetch(wh, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(instSel)
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+
+    const e = data.estatisticas || data;
+    const total = e.total      ?? e.totalCapturados ?? '?';
+    const novos = e.inseridos  ?? e.novosInseridos  ?? '?';
+    const dup   = e.duplicados ?? e.jaExistiam      ?? '?';
+
+    document.getElementById('sTotal').textContent = total;
+    document.getElementById('sNovos').textContent = novos;
+    document.getElementById('sDup').textContent   = dup;
+    document.getElementById('stats').style.display = 'grid';
+
+    if (novos > 0) {
+      log(`✅ Concluído! <b>${novos}</b> novos leads salvos — ${dup} já existiam`, 'ok');
+    } else {
+      log(`ℹ️ Nenhum lead novo — todos já estão na planilha`, 'warn');
     }
+  } catch(e) {
+    log(`❌ Erro: ${e.message}`, 'err');
+  }
 
-    function limparSessao() {
-      document.getElementById('appScreen').style.display   = 'none';
-      document.getElementById('loginScreen').style.display = 'flex';
-      document.getElementById('senhaInput').value = '';
-      resetStats();
-    }
+  btn.innerHTML = '🚀 Capturar Leads';
+  btn.disabled = false;
+}
 
-    // ── Config ─────────────────────────────────────────────────
-    function toggleConfig() {
-      const toggle = document.getElementById('configToggle');
-      const panel  = document.getElementById('configPanel');
-      toggle.classList.toggle('open');
-      panel.classList.toggle('open');
-    }
-
-    function salvarConfig() {
-      const cfg = {
-        evolutionUrl: document.getElementById('cfgEvolutionUrl').value.trim(),
-        apikey:       document.getElementById('cfgApiKey').value.trim(),
-        webhookUrl:   document.getElementById('cfgWebhookUrl').value.trim(),
-        lastInstance: document.getElementById('instance').value.trim()
-      };
-      localStorage.setItem(LS, JSON.stringify(cfg));
-      const msg = document.getElementById('configSaved');
-      msg.textContent = '✅ Configurações salvas!';
-      setTimeout(() => msg.textContent = '', 3000);
-    }
-
-    function carregarConfig() {
-      try { return JSON.parse(localStorage.getItem(LS)) || null; }
-      catch { return null; }
-    }
-
-    // ── Importar ───────────────────────────────────────────────
-    async function importar() {
-      const instance    = document.getElementById('instance').value.trim();
-      const cfg         = carregarConfig() || {};
-      const evolutionUrl = (document.getElementById('cfgEvolutionUrl').value.trim() || cfg.evolutionUrl || '').replace(/\/$/, '');
-      const apikey      = document.getElementById('cfgApiKey').value.trim() || cfg.apikey || '';
-      const webhookUrl  = document.getElementById('cfgWebhookUrl').value.trim() || cfg.webhookUrl || '';
-      const btn         = document.getElementById('btnImportar');
-      const dot         = document.getElementById('dot');
-
-      if (!instance) {
-        setStatus('error', '⚠️ Informe o nome da instância.'); return;
-      }
-      if (!webhookUrl || webhookUrl.includes('seu-n8n')) {
-        setStatus('error', '⚠️ Configure e salve a URL do Webhook nas Configurações.'); return;
-      }
-      if (!evolutionUrl) {
-        setStatus('error', '⚠️ Configure e salve a Evolution API URL nas Configurações.'); return;
-      }
-
-      // Salva instância usada
-      const cfg2 = carregarConfig() || {};
-      cfg2.lastInstance = instance;
-      localStorage.setItem(LS, JSON.stringify(cfg2));
-
-      btn.disabled = true;
-      setStatus('running', '⏳ Importando leads... aguarde.');
-      resetStats();
-      document.getElementById('restantesBox').style.display = 'none';
-
-      try {
-        const res = await fetch(webhookUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ instance, evolutionUrl, apikey })
-        });
-
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-
-        if (data.sucesso) {
-          const e = data.estatisticas || {};
-          document.getElementById('statTotal').textContent      = e.total      ?? '–';
-          document.getElementById('statInseridos').textContent  = e.inseridos  ?? '–';
-          document.getElementById('statDuplicados').textContent = e.duplicados ?? '–';
-          document.getElementById('statErros').textContent      = e.erros      ?? '–';
-          setStatus('success', `✅ Concluído — ${e.inseridos ?? 0} novos leads salvos.`);
-
-          if (e.restantes && e.restantes > 0) {
-            const rb = document.getElementById('restantesBox');
-            rb.textContent = `⚡ Ainda há ${e.restantes} leads para importar. Rode novamente!`;
-            rb.style.display = 'block';
-          }
-        } else {
-          throw new Error(data.mensagem || 'Resposta inesperada');
-        }
-
-      } catch (err) {
-        setStatus('error', '❌ Erro: ' + err.message);
-      } finally {
-        btn.disabled = false;
-      }
-    }
-
-    // ── Helpers ────────────────────────────────────────────────
-    function setStatus(tipo, msg) {
-      document.getElementById('dot').className = 'dot ' + tipo;
-      document.getElementById('statusMsg').textContent = msg;
-    }
-
-    function resetStats() {
-      ['statTotal','statInseridos','statDuplicados','statErros']
-        .forEach(id => document.getElementById(id).textContent = '–');
-    }
-  </script>
+// ─── Log ──────────────────────────────────────────────────────
+function showLog() { document.getElementById('logEl').classList.add('vis'); }
+function log(msg, tipo = 'inf') {
+  const el = document.getElementById('logEl');
+  const t  = new Date().toLocaleTimeString('pt-BR');
+  const d  = document.createElement('div');
+  d.className = `l-line l-${tipo}`;
+  d.innerHTML = `[${t}] ${msg}`;
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+}
+</script>
 </body>
 </html>
