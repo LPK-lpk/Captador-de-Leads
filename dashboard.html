@@ -24,7 +24,7 @@
     h1 { font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
     .subtitle { font-size: 0.85rem; color: #555; margin-bottom: 28px; }
 
-    .field-group { margin-bottom: 16px; }
+    .field-group { margin-bottom: 14px; }
     label {
       display: block; font-size: 0.72rem; font-weight: 600; color: #666;
       text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px;
@@ -35,40 +35,43 @@
       padding: 12px 14px; outline: none; transition: border-color 0.2s;
     }
     input:focus { border-color: #4ade80; }
+    input::placeholder { color: #333; }
 
     .btn {
-      width: 100%; padding: 13px; border: none; border-radius: 11px;
+      width: 100%; padding: 14px; border: none; border-radius: 11px;
       font-size: 0.95rem; font-weight: 600; cursor: pointer;
       transition: opacity 0.2s, transform 0.1s;
     }
     .btn:hover:not(:disabled) { opacity: 0.88; }
     .btn:active:not(:disabled) { transform: scale(0.98); }
-    .btn-primary   { background: #4ade80; color: #0d0d0d; }
-    .btn-secondary { background: #2a2a2a; color: #bbb; border: 1px solid #333; }
-    .btn:disabled  { opacity: 0.35; cursor: not-allowed; }
+    .btn-primary  { background: #4ade80; color: #0d0d0d; }
+    .btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
     .msg { font-size: 0.82rem; margin-top: 8px; min-height: 18px; text-align: center; }
 
-    /* Config */
-    .cfg-toggle {
-      display: flex; align-items: center; gap: 7px;
+    /* Seção avançada */
+    .adv-toggle {
+      display: flex; align-items: center; gap: 6px;
       background: none; border: none; cursor: pointer;
-      color: #555; font-size: 0.78rem; padding: 0; margin-bottom: 14px;
+      color: #444; font-size: 0.75rem; padding: 0; margin-bottom: 12px;
       transition: color 0.2s; width: fit-content;
     }
-    .cfg-toggle:hover { color: #888; }
-    .cfg-toggle .arr { transition: transform 0.2s; display: inline-block; }
-    .cfg-toggle.open .arr { transform: rotate(90deg); }
-    .cfg-box {
-      background: #131313; border: 1px solid #222; border-radius: 12px;
-      padding: 16px; margin-bottom: 20px; display: none;
+    .adv-toggle:hover { color: #777; }
+    .adv-toggle .arr { transition: transform 0.2s; display: inline-block; }
+    .adv-toggle.open .arr { transform: rotate(90deg); }
+    .adv-box {
+      background: #131313; border: 1px solid #1e1e1e; border-radius: 12px;
+      padding: 14px; margin-bottom: 16px; display: none;
     }
-    .cfg-box.vis { display: block; }
+    .adv-box.vis { display: block; }
 
     /* Stats */
-    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; display: none; }
+    .stats {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
+      margin-bottom: 18px;
+    }
     .stat  { background: #111; border: 1px solid #222; border-radius: 10px; padding: 12px; text-align: center; }
-    .stat-n { font-size: 1.35rem; font-weight: 700; color: #4ade80; }
+    .stat-n { font-size: 1.4rem; font-weight: 700; color: #4ade80; }
     .stat-l { font-size: 0.68rem; color: #555; margin-top: 3px; }
 
     /* Log */
@@ -92,23 +95,28 @@
       margin-right: 7px; vertical-align: middle;
     }
 
-    .app-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 22px; }
+    .app-top {
+      display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;
+    }
     .app-title { font-size: 1.1rem; font-weight: 700; color: #fff; }
     .app-sub   { font-size: 0.76rem; color: #444; margin-top: 2px; }
     .exit-btn  {
-      background: none; border: none; color: #3a3a3a; font-size: 0.75rem;
+      background: none; border: none; color: #333; font-size: 0.75rem;
       cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: color 0.2s;
     }
     .exit-btn:hover { color: #f87171; }
 
-    .divider { border: none; border-top: 1px solid #1e1e1e; margin: 18px 0; }
+    .divider { border: none; border-top: 1px solid #1e1e1e; margin: 16px 0; }
 
-    .inst-hint {
-      font-size: 0.75rem; color: #444; margin-top: 6px; line-height: 1.5;
+    .row { display: flex; gap: 10px; }
+    .row .field-group { flex: 1; }
+
+    .tip {
+      font-size: 0.72rem; color: #3a3a3a; margin-top: 5px; line-height: 1.5;
     }
-    .inst-hint code {
-      background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 4px;
-      padding: 1px 5px; color: #facc15; font-size: 0.72rem;
+    .tip code {
+      background: #191919; border: 1px solid #282828; border-radius: 4px;
+      padding: 1px 5px; color: #facc15; font-size: 0.7rem;
     }
   </style>
 </head>
@@ -120,7 +128,7 @@
   <h1>Captador de Leads</h1>
   <p class="subtitle">Evolution API → Google Sheets</p>
   <div class="field-group">
-    <label>Senha de Acesso</label>
+    <label>Senha</label>
     <input type="password" id="pw" placeholder="••••••••"
            onkeydown="if(event.key==='Enter') login()" autofocus />
   </div>
@@ -139,46 +147,44 @@
     <button class="exit-btn" onclick="logout()">Sair</button>
   </div>
 
-  <!-- Configurações -->
-  <button class="cfg-toggle" id="cfgBtn" onclick="toggleCfg()">
-    <span class="arr">▶</span> Configurações
-  </button>
-  <div class="cfg-box" id="cfgBox">
+  <!-- Campos principais -->
+  <div class="field-group">
+    <label>Nome da Instância</label>
+    <input type="text" id="fInstance" placeholder="Ex: SeoSalimBarbearia"
+           oninput="validate()" />
+    <p class="tip">Nome exato da instância no painel da Evolution API</p>
+  </div>
+
+  <div class="row">
     <div class="field-group">
       <label>Evolution URL</label>
-      <input type="url" id="cfgUrl" placeholder="https://..." />
+      <input type="url" id="fUrl" placeholder="http://..." oninput="validate()" />
     </div>
     <div class="field-group">
       <label>API Key</label>
-      <input type="text" id="cfgKey" placeholder="••••••••" />
+      <input type="text" id="fKey" placeholder="••••••••" oninput="validate()" />
     </div>
-    <div class="field-group">
+  </div>
+
+  <!-- Avançado: webhook -->
+  <button class="adv-toggle" id="advBtn" onclick="toggleAdv()">
+    <span class="arr">▶</span> Avançado
+  </button>
+  <div class="adv-box" id="advBox">
+    <div class="field-group" style="margin-bottom:0">
       <label>Webhook n8n</label>
-      <input type="url" id="cfgWh" placeholder="https://..." />
+      <input type="url" id="fWh" placeholder="https://..." />
     </div>
-    <button class="btn btn-secondary" onclick="saveConfig()" style="margin-top:4px">💾 Salvar</button>
-    <p class="msg" id="cfgMsg"></p>
   </div>
 
-  <!-- Instância -->
-  <div class="field-group">
-    <label>Nome da Instância</label>
-    <input type="text" id="instInput" placeholder="Ex: SeoSalimBarbearia"
-           oninput="onInstInput()" />
-    <p class="inst-hint">
-      Copie o nome exato do painel da Evolution API.<br>
-      Ex: <code>SeoSalimBarbearia</code> &nbsp;|&nbsp; <code>LeonLocacoes</code>
-    </p>
-  </div>
-
-  <!-- Stats -->
-  <div class="stats" id="stats">
+  <!-- Stats (aparece após captura) -->
+  <div class="stats" id="stats" style="display:none">
     <div class="stat"><div class="stat-n" id="sTotal">0</div><div class="stat-l">Capturados</div></div>
     <div class="stat"><div class="stat-n" id="sNovos">0</div><div class="stat-l">Inseridos</div></div>
     <div class="stat"><div class="stat-n" id="sDup">0</div><div class="stat-l">Duplicados</div></div>
   </div>
 
-  <!-- Ação -->
+  <!-- Botão principal -->
   <button class="btn btn-primary" id="captBtn" onclick="capturar()" disabled>
     🚀 Capturar Leads
   </button>
@@ -200,34 +206,31 @@ let cfg = {};
 // ─── Config ───────────────────────────────────────────────────
 function loadConfig() {
   try { cfg = JSON.parse(localStorage.getItem(CFG_KEY) || '{}'); } catch(e) { cfg = {}; }
-  cfg.evolutionUrl = cfg.evolutionUrl || DEFAULTS.evolutionUrl;
-  cfg.webhookUrl   = cfg.webhookUrl   || DEFAULTS.webhookUrl;
-  document.getElementById('cfgUrl').value = cfg.evolutionUrl;
-  document.getElementById('cfgKey').value = cfg.apikey || '';
-  document.getElementById('cfgWh').value  = cfg.webhookUrl;
-  if (cfg.lastInstance) {
-    document.getElementById('instInput').value = cfg.lastInstance;
-    document.getElementById('captBtn').disabled = false;
-  }
+  document.getElementById('fInstance').value = cfg.lastInstance  || '';
+  document.getElementById('fUrl').value      = cfg.evolutionUrl  || DEFAULTS.evolutionUrl;
+  document.getElementById('fKey').value      = cfg.apikey        || '';
+  document.getElementById('fWh').value       = cfg.webhookUrl    || DEFAULTS.webhookUrl;
+  validate();
 }
 
 function saveConfig() {
-  cfg.evolutionUrl = document.getElementById('cfgUrl').value.trim().replace(/\/+$/, '') || DEFAULTS.evolutionUrl;
-  cfg.apikey       = document.getElementById('cfgKey').value.trim();
-  cfg.webhookUrl   = document.getElementById('cfgWh').value.trim() || DEFAULTS.webhookUrl;
+  cfg.lastInstance = document.getElementById('fInstance').value.trim();
+  cfg.evolutionUrl = document.getElementById('fUrl').value.trim().replace(/\/+$/, '') || DEFAULTS.evolutionUrl;
+  cfg.apikey       = document.getElementById('fKey').value.trim();
+  cfg.webhookUrl   = document.getElementById('fWh').value.trim() || DEFAULTS.webhookUrl;
   localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
-  showMsg('cfgMsg', '✅ Salvo!', '#4ade80');
-  setTimeout(() => showMsg('cfgMsg', ''), 2000);
 }
 
-function showMsg(id, txt, color = '#f87171') {
-  const el = document.getElementById(id);
-  el.textContent = txt; el.style.color = color;
+function validate() {
+  const ok = document.getElementById('fInstance').value.trim() &&
+             document.getElementById('fUrl').value.trim() &&
+             document.getElementById('fKey').value.trim();
+  document.getElementById('captBtn').disabled = !ok;
 }
 
-function toggleCfg() {
-  document.getElementById('cfgBtn').classList.toggle('open');
-  document.getElementById('cfgBox').classList.toggle('vis');
+function toggleAdv() {
+  document.getElementById('advBtn').classList.toggle('open');
+  document.getElementById('advBox').classList.toggle('vis');
 }
 
 // ─── Auth ─────────────────────────────────────────────────────
@@ -237,7 +240,8 @@ function login() {
     document.getElementById('appScreen').style.display   = 'flex';
     loadConfig();
   } else {
-    showMsg('loginErr', '❌ Senha incorreta');
+    const el = document.getElementById('loginErr');
+    el.textContent = '❌ Senha incorreta'; el.style.color = '#f87171';
   }
 }
 
@@ -247,30 +251,23 @@ function logout() {
   document.getElementById('pw').value = '';
 }
 
-// ─── Instância ────────────────────────────────────────────────
-function onInstInput() {
-  const val = document.getElementById('instInput').value.trim();
-  document.getElementById('captBtn').disabled = !val;
-}
-
 // ─── Capturar ─────────────────────────────────────────────────
 async function capturar() {
-  const instance = document.getElementById('instInput').value.trim();
-  if (!instance) return;
+  const instance    = document.getElementById('fInstance').value.trim();
+  const evolutionUrl= document.getElementById('fUrl').value.trim().replace(/\/+$/, '');
+  const apikey      = document.getElementById('fKey').value.trim();
+  const webhookUrl  = document.getElementById('fWh').value.trim() || DEFAULTS.webhookUrl;
 
-  const evolutionUrl = cfg.evolutionUrl || DEFAULTS.evolutionUrl;
-  const apikey       = cfg.apikey || '';
-  const webhookUrl   = cfg.webhookUrl || DEFAULTS.webhookUrl;
+  if (!instance || !evolutionUrl || !apikey) return;
 
-  cfg.lastInstance = instance;
-  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+  saveConfig();
 
   const btn = document.getElementById('captBtn');
   btn.innerHTML = '<span class="spin"></span>Capturando...';
-  btn.disabled = true;
+  btn.disabled  = true;
   document.getElementById('stats').style.display = 'none';
   showLog();
-  log(`🚀 Iniciando captura — instância: <b>${instance}</b>`, 'inf');
+  log(`🚀 Instância: <b>${instance}</b>`, 'inf');
 
   try {
     const resp = await fetch(webhookUrl, {
@@ -279,10 +276,10 @@ async function capturar() {
       body: JSON.stringify({ instance, evolutionUrl, apikey })
     });
 
-    if (!resp.ok) throw new Error(`HTTP ${resp.status} — verifique o webhook n8n`);
-
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
-    const e = data.estatisticas || data;
+
+    const e     = data.estatisticas || data;
     const total = e.total      ?? e.totalCapturados ?? '?';
     const novos = e.inseridos  ?? e.novosInseridos  ?? '?';
     const dup   = e.duplicados ?? e.jaExistiam      ?? '?';
@@ -293,16 +290,16 @@ async function capturar() {
     document.getElementById('stats').style.display = 'grid';
 
     if (novos > 0) {
-      log(`✅ Concluído! <b>${novos}</b> novos leads salvos (${dup} já existiam)`, 'ok');
+      log(`✅ <b>${novos}</b> novos leads salvos — ${dup} já existiam`, 'ok');
     } else {
       log(`ℹ️ Nenhum lead novo — todos já estão na planilha`, 'warn');
     }
   } catch(e) {
-    log(`❌ Erro: ${e.message}`, 'err');
+    log(`❌ ${e.message}`, 'err');
   }
 
   btn.innerHTML = '🚀 Capturar Leads';
-  btn.disabled = false;
+  btn.disabled  = false;
 }
 
 // ─── Log ──────────────────────────────────────────────────────
