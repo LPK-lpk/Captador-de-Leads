@@ -14,7 +14,7 @@
     }
     .card {
       background: #1c1c1c; border: 1px solid #2e2e2e; border-radius: 20px;
-      padding: 36px; width: 100%; max-width: 500px;
+      padding: 36px; width: 100%; max-width: 480px;
       box-shadow: 0 12px 48px rgba(0,0,0,0.6);
     }
     #loginScreen { display: flex; flex-direction: column; }
@@ -24,7 +24,7 @@
     h1 { font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
     .subtitle { font-size: 0.85rem; color: #555; margin-bottom: 28px; }
 
-    .field-group { margin-bottom: 14px; }
+    .field-group { margin-bottom: 16px; }
     label {
       display: block; font-size: 0.72rem; font-weight: 600; color: #666;
       text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px;
@@ -44,14 +44,8 @@
     .btn:hover:not(:disabled) { opacity: 0.88; }
     .btn:active:not(:disabled) { transform: scale(0.98); }
     .btn-primary   { background: #4ade80; color: #0d0d0d; }
-    .btn-secondary { background: #2a2a2a; color: #bbb; }
-    .btn-sm {
-      width: auto; padding: 8px 14px; font-size: 0.8rem;
-      border-radius: 8px; background: #2a2a2a; color: #999;
-      border: 1px solid #333;
-    }
-    .btn-sm:hover:not(:disabled) { border-color: #4ade80; color: #4ade80; opacity: 1; }
-    .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .btn-secondary { background: #2a2a2a; color: #bbb; border: 1px solid #333; }
+    .btn:disabled  { opacity: 0.35; cursor: not-allowed; }
 
     .msg { font-size: 0.82rem; margin-top: 8px; min-height: 18px; text-align: center; }
 
@@ -70,45 +64,9 @@
       padding: 16px; margin-bottom: 20px; display: none;
     }
     .cfg-box.vis { display: block; }
-    .cfg-row { display: flex; gap: 10px; }
-    .cfg-row .field-group { flex: 1; margin-bottom: 14px; }
-
-    /* Instâncias */
-    .sec-header {
-      display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
-    }
-    .sec-label {
-      font-size: 0.72rem; font-weight: 600; color: #666;
-      text-transform: uppercase; letter-spacing: 1px;
-    }
-    .inst-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-    .inst-card {
-      display: flex; align-items: center; gap: 13px;
-      background: #111; border: 2px solid #252525; border-radius: 12px;
-      padding: 13px 15px; cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-    }
-    .inst-card:hover:not(.disc) { border-color: #383838; background: #161616; }
-    .inst-card.sel  { border-color: #4ade80; background: #0c1e12; }
-    .inst-card.disc { opacity: 0.45; cursor: not-allowed; }
-    .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-    .dot-g { background: #4ade80; box-shadow: 0 0 7px #4ade8066; }
-    .dot-r { background: #f87171; }
-    .dot-y { background: #facc15; }
-    .inst-info { flex: 1; min-width: 0; }
-    .inst-name { font-size: 0.92rem; font-weight: 600; color: #e5e5e5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .inst-num  { font-size: 0.76rem; color: #505050; margin-top: 2px; }
-    .badge {
-      font-size: 0.7rem; padding: 3px 8px; border-radius: 6px;
-      font-weight: 700; flex-shrink: 0; white-space: nowrap;
-    }
-    .badge-ok  { background: #0c2016; color: #4ade80; }
-    .badge-off { background: #280f0f; color: #f87171; }
-    .badge-oth { background: #1c1c08; color: #facc15; }
-    .placeholder { color: #3a3a3a; font-size: 0.83rem; text-align: center; padding: 18px 0; }
 
     /* Stats */
-    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; display: none; }
     .stat  { background: #111; border: 1px solid #222; border-radius: 10px; padding: 12px; text-align: center; }
     .stat-n { font-size: 1.35rem; font-weight: 700; color: #4ade80; }
     .stat-l { font-size: 0.68rem; color: #555; margin-top: 3px; }
@@ -117,7 +75,7 @@
     .log {
       background: #080808; border: 1px solid #1e1e1e; border-radius: 10px;
       padding: 12px; font-size: 0.77rem; color: #555; margin-top: 14px;
-      max-height: 130px; overflow-y: auto; display: none;
+      max-height: 140px; overflow-y: auto; display: none;
     }
     .log.vis { display: block; }
     .l-ok   { color: #4ade80; }
@@ -133,9 +91,7 @@
       border-radius: 50%; animation: spin 0.7s linear infinite;
       margin-right: 7px; vertical-align: middle;
     }
-    .spin-w { border-color: #ffffff44; border-top-color: #fff; }
 
-    .divider { border: none; border-top: 1px solid #1e1e1e; margin: 18px 0; }
     .app-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 22px; }
     .app-title { font-size: 1.1rem; font-weight: 700; color: #fff; }
     .app-sub   { font-size: 0.76rem; color: #444; margin-top: 2px; }
@@ -144,6 +100,16 @@
       cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: color 0.2s;
     }
     .exit-btn:hover { color: #f87171; }
+
+    .divider { border: none; border-top: 1px solid #1e1e1e; margin: 18px 0; }
+
+    .inst-hint {
+      font-size: 0.75rem; color: #444; margin-top: 6px; line-height: 1.5;
+    }
+    .inst-hint code {
+      background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 4px;
+      padding: 1px 5px; color: #facc15; font-size: 0.72rem;
+    }
   </style>
 </head>
 <body>
@@ -152,7 +118,7 @@
 <div class="card" id="loginScreen">
   <div class="icon">📲</div>
   <h1>Captador de Leads</h1>
-  <p class="subtitle">Sistema Evolution API + n8n</p>
+  <p class="subtitle">Evolution API → Google Sheets</p>
   <div class="field-group">
     <label>Senha de Acesso</label>
     <input type="password" id="pw" placeholder="••••••••"
@@ -178,15 +144,13 @@
     <span class="arr">▶</span> Configurações
   </button>
   <div class="cfg-box" id="cfgBox">
-    <div class="cfg-row">
-      <div class="field-group">
-        <label>Evolution URL</label>
-        <input type="url" id="cfgUrl" placeholder="https://..." />
-      </div>
-      <div class="field-group">
-        <label>API Key</label>
-        <input type="text" id="cfgKey" placeholder="••••••••" />
-      </div>
+    <div class="field-group">
+      <label>Evolution URL</label>
+      <input type="url" id="cfgUrl" placeholder="https://..." />
+    </div>
+    <div class="field-group">
+      <label>API Key</label>
+      <input type="text" id="cfgKey" placeholder="••••••••" />
     </div>
     <div class="field-group">
       <label>Webhook n8n</label>
@@ -196,17 +160,19 @@
     <p class="msg" id="cfgMsg"></p>
   </div>
 
-  <!-- Instâncias -->
-  <div class="sec-header">
-    <span class="sec-label">Instância WhatsApp</span>
-    <button class="btn btn-sm" id="fetchBtn" onclick="fetchInstances()">🔍 Buscar Instâncias</button>
-  </div>
-  <div class="inst-list" id="instList">
-    <div class="placeholder">Clique em "Buscar Instâncias" para listar as instâncias da Evolution</div>
+  <!-- Instância -->
+  <div class="field-group">
+    <label>Nome da Instância</label>
+    <input type="text" id="instInput" placeholder="Ex: SeoSalimBarbearia"
+           oninput="onInstInput()" />
+    <p class="inst-hint">
+      Copie o nome exato do painel da Evolution API.<br>
+      Ex: <code>SeoSalimBarbearia</code> &nbsp;|&nbsp; <code>LeonLocacoes</code>
+    </p>
   </div>
 
   <!-- Stats -->
-  <div class="stats" id="stats" style="display:none">
+  <div class="stats" id="stats">
     <div class="stat"><div class="stat-n" id="sTotal">0</div><div class="stat-l">Capturados</div></div>
     <div class="stat"><div class="stat-n" id="sNovos">0</div><div class="stat-l">Inseridos</div></div>
     <div class="stat"><div class="stat-n" id="sDup">0</div><div class="stat-l">Duplicados</div></div>
@@ -224,33 +190,34 @@
 <script>
 const SENHA   = '34266450';
 const CFG_KEY = 'captador_config';
-let cfg = {}, instSel = null;
-
-// Defaults pré-configurados — editáveis nas Configurações
 const DEFAULTS = {
   evolutionUrl: 'http://n8n-evolution.ndjgby.easypanel.host',
   webhookUrl:   'https://n8n-n8n-start.ndjgby.easypanel.host/webhook/importar-leads-barbearia',
   apikey:       ''
 };
+let cfg = {};
 
 // ─── Config ───────────────────────────────────────────────────
 function loadConfig() {
   try { cfg = JSON.parse(localStorage.getItem(CFG_KEY) || '{}'); } catch(e) { cfg = {}; }
-  document.getElementById('cfgUrl').value = cfg.evolutionUrl || DEFAULTS.evolutionUrl;
-  document.getElementById('cfgKey').value = cfg.apikey       || DEFAULTS.apikey;
-  document.getElementById('cfgWh').value  = cfg.webhookUrl   || DEFAULTS.webhookUrl;
-  // Garante que os defaults fiquem no cfg também
   cfg.evolutionUrl = cfg.evolutionUrl || DEFAULTS.evolutionUrl;
   cfg.webhookUrl   = cfg.webhookUrl   || DEFAULTS.webhookUrl;
+  document.getElementById('cfgUrl').value = cfg.evolutionUrl;
+  document.getElementById('cfgKey').value = cfg.apikey || '';
+  document.getElementById('cfgWh').value  = cfg.webhookUrl;
+  if (cfg.lastInstance) {
+    document.getElementById('instInput').value = cfg.lastInstance;
+    document.getElementById('captBtn').disabled = false;
+  }
 }
 
 function saveConfig() {
-  cfg.evolutionUrl = document.getElementById('cfgUrl').value.trim().replace(/\/+$/, '');
+  cfg.evolutionUrl = document.getElementById('cfgUrl').value.trim().replace(/\/+$/, '') || DEFAULTS.evolutionUrl;
   cfg.apikey       = document.getElementById('cfgKey').value.trim();
-  cfg.webhookUrl   = document.getElementById('cfgWh').value.trim();
+  cfg.webhookUrl   = document.getElementById('cfgWh').value.trim() || DEFAULTS.webhookUrl;
   localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
-  showMsg('cfgMsg', '✅ Configurações salvas!', '#4ade80');
-  setTimeout(() => showMsg('cfgMsg', ''), 2500);
+  showMsg('cfgMsg', '✅ Salvo!', '#4ade80');
+  setTimeout(() => showMsg('cfgMsg', ''), 2000);
 }
 
 function showMsg(id, txt, color = '#f87171') {
@@ -278,146 +245,43 @@ function logout() {
   document.getElementById('appScreen').style.display   = 'none';
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('pw').value = '';
-  instSel = null;
 }
 
-// ─── Buscar Instâncias ────────────────────────────────────────
-async function fetchInstances() {
-  const url = (document.getElementById('cfgUrl').value.trim() || cfg.evolutionUrl || '').replace(/\/+$/, '');
-  const key  = document.getElementById('cfgKey').value.trim() || cfg.apikey || '';
-
-  if (!url || !key) {
-    alert('Preencha Evolution URL e API Key nas ⚙️ Configurações primeiro.');
-    document.getElementById('cfgBtn').classList.add('open');
-    document.getElementById('cfgBox').classList.add('vis');
-    return;
-  }
-
-  // Salva automaticamente
-  cfg.evolutionUrl = url; cfg.apikey = key;
-  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
-
-  const btn = document.getElementById('fetchBtn');
-  btn.innerHTML = '<span class="spin spin-w"></span>Buscando...';
-  btn.disabled = true;
-  instSel = null;
-  document.getElementById('captBtn').disabled = true;
-
-  try {
-    const resp = await fetch(`${url}/instance/fetchInstances`, {
-      headers: { 'apikey': key, 'Content-Type': 'application/json' }
-    });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status} — verifique a URL e API Key`);
-
-    let data = await resp.json();
-    // Normaliza: Evolution pode retornar array ou {instances:[...]} ou {data:[...]}
-    const list = Array.isArray(data) ? data
-               : (data.instances || data.data || []);
-
-    renderList(list, url, key);
-    if (list.length > 0) log(`🔍 ${list.length} instância(s) encontrada(s)`, 'inf');
-
-  } catch(e) {
-    const isCors = e.message === 'Failed to fetch';
-    const helpMsg = isCors
-      ? `❌ CORS bloqueado — abra o arquivo via servidor local.<br>
-         <small style="color:#555">No terminal, na pasta do arquivo:<br>
-         <code style="color:#facc15">python -m http.server 8080</code><br>
-         Depois acesse: <code style="color:#facc15">http://localhost:8080/dashboard.html</code></small>`
-      : `❌ ${e.message}`;
-    document.getElementById('instList').innerHTML =
-      `<div class="placeholder" style="line-height:1.7">${helpMsg}</div>`;
-    log(`Erro: ${isCors ? 'CORS bloqueado (abra via localhost)' : e.message}`, 'err');
-    showLog();
-  }
-
-  btn.innerHTML = '🔍 Buscar Instâncias';
-  btn.disabled = false;
-}
-
-function renderList(list, url, key) {
-  const el = document.getElementById('instList');
-  if (!list.length) {
-    el.innerHTML = '<div class="placeholder">Nenhuma instância encontrada nessa Evolution</div>';
-    return;
-  }
-
-  // Ordena: conectadas primeiro
-  list.sort((a, b) => {
-    const sa = a.instance?.state || a.state || '';
-    const sb = b.instance?.state || b.state || '';
-    return (sa === 'open' ? 0 : 1) - (sb === 'open' ? 0 : 1);
-  });
-
-  el.innerHTML = '';
-  list.forEach(inst => {
-    const nome   = inst.instance?.instanceName || inst.instanceName || inst.name || '?';
-    const status = (inst.instance?.state || inst.state || inst.status || 'unknown').toLowerCase();
-    const numero = (inst.instance?.owner || inst.owner || inst.number || '').replace('@s.whatsapp.net', '');
-    const ok     = status === 'open';
-    const restart= status.includes('restart') || status.includes('connecting');
-
-    const dotCls  = ok ? 'dot-g' : (restart ? 'dot-y' : 'dot-r');
-    const bdgCls  = ok ? 'badge-ok' : (restart ? 'badge-oth' : 'badge-off');
-    const bdgTxt  = ok ? 'Conectado' : (restart ? 'Reiniciando' : 'Desconectado');
-
-    const card = document.createElement('div');
-    card.className = `inst-card${ok ? '' : ' disc'}`;
-    card.innerHTML = `
-      <div class="dot ${dotCls}"></div>
-      <div class="inst-info">
-        <div class="inst-name">${nome}</div>
-        <div class="inst-num">${numero || '—'}</div>
-      </div>
-      <span class="badge ${bdgCls}">${bdgTxt}</span>
-    `;
-    if (ok) {
-      card.onclick = () => selectInst(card, nome, url, key);
-    } else {
-      card.title = 'Instância desconectada. Reconecte no painel da Evolution (escaneie o QR Code) antes de usar.';
-    }
-    el.appendChild(card);
-  });
-}
-
-function selectInst(card, nome, url, key) {
-  document.querySelectorAll('.inst-card').forEach(c => c.classList.remove('sel'));
-  card.classList.add('sel');
-  instSel = { instance: nome, evolutionUrl: url, apikey: key };
-  cfg.lastInstance = nome;
-  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
-  document.getElementById('captBtn').disabled = false;
-  log(`✅ Instância selecionada: <b>${nome}</b>`, 'ok');
-  showLog();
+// ─── Instância ────────────────────────────────────────────────
+function onInstInput() {
+  const val = document.getElementById('instInput').value.trim();
+  document.getElementById('captBtn').disabled = !val;
 }
 
 // ─── Capturar ─────────────────────────────────────────────────
 async function capturar() {
-  if (!instSel) return;
-  const wh = document.getElementById('cfgWh').value.trim() || cfg.webhookUrl;
-  if (!wh) {
-    alert('Configure o Webhook n8n nas ⚙️ Configurações.');
-    document.getElementById('cfgBtn').classList.add('open');
-    document.getElementById('cfgBox').classList.add('vis');
-    return;
-  }
+  const instance = document.getElementById('instInput').value.trim();
+  if (!instance) return;
+
+  const evolutionUrl = cfg.evolutionUrl || DEFAULTS.evolutionUrl;
+  const apikey       = cfg.apikey || '';
+  const webhookUrl   = cfg.webhookUrl || DEFAULTS.webhookUrl;
+
+  cfg.lastInstance = instance;
+  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
 
   const btn = document.getElementById('captBtn');
   btn.innerHTML = '<span class="spin"></span>Capturando...';
   btn.disabled = true;
   document.getElementById('stats').style.display = 'none';
   showLog();
-  log(`🚀 Enviando para n8n — instância: <b>${instSel.instance}</b>`, 'inf');
+  log(`🚀 Iniciando captura — instância: <b>${instance}</b>`, 'inf');
 
   try {
-    const resp = await fetch(wh, {
+    const resp = await fetch(webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(instSel)
+      body: JSON.stringify({ instance, evolutionUrl, apikey })
     });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const data = await resp.json();
 
+    if (!resp.ok) throw new Error(`HTTP ${resp.status} — verifique o webhook n8n`);
+
+    const data = await resp.json();
     const e = data.estatisticas || data;
     const total = e.total      ?? e.totalCapturados ?? '?';
     const novos = e.inseridos  ?? e.novosInseridos  ?? '?';
@@ -429,7 +293,7 @@ async function capturar() {
     document.getElementById('stats').style.display = 'grid';
 
     if (novos > 0) {
-      log(`✅ Concluído! <b>${novos}</b> novos leads salvos — ${dup} já existiam`, 'ok');
+      log(`✅ Concluído! <b>${novos}</b> novos leads salvos (${dup} já existiam)`, 'ok');
     } else {
       log(`ℹ️ Nenhum lead novo — todos já estão na planilha`, 'warn');
     }
