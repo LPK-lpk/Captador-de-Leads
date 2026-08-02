@@ -659,6 +659,24 @@
         atualizarStat('statRecebidos', totalChats);
         log(`✅ SW01: ${totalChats} chats encontrados.`, 'success');
 
+        // Sem chats → encerrar com stats zeradas
+        if (totalChats === 0) {
+          setStep('step2', 'done');
+          setStep('step3', 'done');
+          setStep('step4', 'done');
+          setProgress(100);
+          setStatusDot('done');
+          document.getElementById('statusLabel').textContent = '✅ Sincronização concluída (0 chats)';
+          atualizarStat('statInseridos', 0);
+          atualizarStat('statAtualizados', 0);
+          atualizarStat('statIgnorados', 0);
+          atualizarStat('statDuplicados', 0);
+          atualizarStat('statErros', 0);
+          atualizarStat('statDuracao', `${((Date.now() - startTime) / 1000).toFixed(1)}s`);
+          log('ℹ️ Nenhum chat retornado pela Evolution API. Verifique o token e o nome da instância.', 'warn');
+          return;
+        }
+
         // ETAPA 2 - SW02
         setStep('step2', 'active');
         setProgress(40, true);
@@ -700,7 +718,13 @@
         });
 
         if (!sw03Resp.ok) throw new Error(`SW03 retornou ${sw03Resp.status}`);
-        const sw03Data = await sw03Resp.json();
+        let sw03Data = {};
+        try {
+          const sw03Text = await sw03Resp.text();
+          sw03Data = sw03Text ? JSON.parse(sw03Text) : {};
+        } catch (parseErr) {
+          log(`⚠️ SW03 retornou resposta inválida: ${parseErr.message}. Verifique o workflow no n8n.`, 'warn');
+        }
 
         setStep('step3', 'done');
         setProgress(90);
@@ -750,7 +774,7 @@
 
     // ── CARREGAR CONFIG SALVA ──
     (function restaurarConfig() {
-      const campos = ['baseUrl','instance','sheetId','sheetName','n8nUrl','maxRecords'];
+      const campos = ['baseUrl','instance','token','sheetId','sheetName','n8nUrl','maxRecords'];
       campos.forEach(id => {
         const salvo = localStorage.getItem('wls_' + id);
         if (salvo) document.getElementById(id).value = salvo;
@@ -758,7 +782,7 @@
     })();
 
     // ── SALVAR CONFIG AO ALTERAR ──
-    ['baseUrl','instance','sheetId','sheetName','n8nUrl','maxRecords'].forEach(id => {
+    ['baseUrl','instance','token','sheetId','sheetName','n8nUrl','maxRecords'].forEach(id => {
       document.getElementById(id).addEventListener('change', () => {
         localStorage.setItem('wls_' + id, document.getElementById(id).value);
       });
