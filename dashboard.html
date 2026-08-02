@@ -684,7 +684,12 @@
         log('⚙️ SW02: Normalizando e processando leads...', 'info');
 
         const sw02Url = `${config.n8nUrl}/sw02-processar-leads`;
-        const sw02Payload = Array.isArray(sw01Data) ? sw01Data : [sw01Data];
+        // SW01 embute os leads no campo 'leads' do JSON de resposta
+        const sw01Leads = sw01Data.leads || [];
+        if (sw01Leads.length === 0) {
+          throw new Error('SW01 não retornou leads no payload (campo leads vazio)');
+        }
+        const sw02Payload = sw01Leads;
         const sw02Resp = await fetch(sw02Url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
