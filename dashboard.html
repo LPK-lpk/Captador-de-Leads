@@ -710,8 +710,10 @@
         log('📊 SW03: Sincronizando com Google Sheets...', 'info');
 
         const sw03Url = `${config.n8nUrl}/sw03-sincronizar-sheets`;
+        // SW02 embute os leads processados no campo 'leads' do JSON de resposta
+        const sw02Leads = sw02Data.leads || [];
         const sw03Payload = {
-          leads: Array.isArray(sw02Data) ? sw02Data.filter(i => !i._tipo) : [sw02Data],
+          leads: sw02Leads,
           sheetId: config.sheetId,
           sheetName: config.sheetName
         };
