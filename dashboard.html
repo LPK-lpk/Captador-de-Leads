@@ -593,7 +593,9 @@
           body: JSON.stringify({
             baseUrl: config.baseUrl,
             instance: config.instance,
-            token: config.token
+            token: config.token,
+            sheetId: config.sheetId,
+            sheetName: config.sheetName
           })
         });
         if (!resp.ok) throw new Error(`SW07 retornou ${resp.status}`);
