@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -600,6 +601,15 @@
         });
         if (!resp.ok) throw new Error(`SW07 retornou ${resp.status}`);
         const data = await resp.json();
+        // Endpoint de contatos indisponível no servidor
+        if (data._tipo === '_erro' || data.total === 0 && data.mensagem) {
+          log(`⚠️ Endpoint de contatos não disponível neste servidor Evolution API.`, 'warn');
+          log(`ℹ️ Motivo: ${data.mensagem || 'sem contatos encontrados'}`, 'warn');
+          log(`ℹ️ O fluxo principal (SW01/SW02/SW03) já captura todos os leads que conversaram.`, 'info');
+          document.getElementById('resultPanel').classList.add('visible');
+          document.getElementById('resultBody').textContent = JSON.stringify(data, null, 2);
+          return;
+        }
         const s = data.estatisticas || {};
         log(`✅ Agenda importada! Inseridos: ${s.inseridos ?? 0} | Atualizados: ${s.atualizados ?? 0} | Ignorados: ${s.ignorados ?? 0}`, 'success');
         document.getElementById('resultPanel').classList.add('visible');
