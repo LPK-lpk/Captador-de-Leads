@@ -375,6 +375,9 @@
     <button class="btn btn-secondary" onclick="testarConexao()" id="btnTest">
       <span>🔌</span> Testar Conexão
     </button>
+    <button class="btn btn-secondary" onclick="importarAgenda()" id="btnAgenda">
+      <span>📋</span> Importar Agenda
+    </button>
     <button class="btn btn-danger" onclick="limparTudo()" id="btnClear">
       <span>🗑</span> Limpar
     </button>
@@ -551,6 +554,7 @@
     function setButtons(desabilitado) {
       document.getElementById('btnSync').disabled = desabilitado;
       document.getElementById('btnTest').disabled = desabilitado;
+      document.getElementById('btnAgenda').disabled = desabilitado;
     }
 
     function limparTudo() {
@@ -566,6 +570,44 @@
     function copiarJSON() {
       const txt = document.getElementById('resultBody').textContent;
       navigator.clipboard.writeText(txt).then(() => log('JSON copiado para a área de transferência.', 'success'));
+    }
+
+    // ============================================================
+    // IMPORTAR AGENDA (SW07)
+    // ============================================================
+    async function importarAgenda() {
+      if (isRunning) return;
+      const config = getConfig();
+      if (!config.baseUrl || !config.instance || !config.token) {
+        log('Preencha baseUrl, instância e token antes de importar.', 'warn');
+        return;
+      }
+      isRunning = true;
+      setButtons(true);
+      log('📋 Importando contatos da agenda via SW07...', 'info');
+      try {
+        const sw07Url = `${config.n8nUrl}/sw07-importar-contatos`;
+        const resp = await fetch(sw07Url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            baseUrl: config.baseUrl,
+            instance: config.instance,
+            token: config.token
+          })
+        });
+        if (!resp.ok) throw new Error(`SW07 retornou ${resp.status}`);
+        const data = await resp.json();
+        const s = data.estatisticas || {};
+        log(`✅ Agenda importada! Inseridos: ${s.inseridos ?? 0} | Atualizados: ${s.atualizados ?? 0} | Ignorados: ${s.ignorados ?? 0}`, 'success');
+        document.getElementById('resultPanel').classList.add('visible');
+        document.getElementById('resultBody').textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        log(`❌ Erro ao importar agenda: ${err.message}`, 'error');
+      } finally {
+        isRunning = false;
+        setButtons(false);
+      }
     }
 
     // ============================================================
